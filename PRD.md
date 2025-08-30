@@ -47,7 +47,7 @@ The application will support two distinct user roles:
         *   Clicking on an approved employee opens a new page.
     *   Approved Employee Details Page (Admin Only):
         *   Dropdown for date selection.
-        *   Google Maps or OpenStreetMap interface displaying employee movement between login and logout times for the selected date.
+        *   OpenStreetMap interface displaying employee movement between login and logout times for the selected date.
         *   Below the map, activities for the day are displayed in card form.
         *   Activity cards are clickable with the same functionality as the employee feed (open activity, post comment).
 
@@ -79,5 +79,5 @@ The application will support two distinct user roles:
             *   Approve/Reject toggle for unapproved employees.
         *   Employee Activity & Location Monitoring:
             *   Date selection for historical data.
-            *   Map interface (Google Maps/OpenStreetMap) showing employee movement.
+            *   Map interface (OpenStreetMap) showing employee movement.
             *   Daily activity feed for selected employee and date.
