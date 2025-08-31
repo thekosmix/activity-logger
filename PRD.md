@@ -81,3 +81,28 @@ The application will support two distinct user roles:
             *   Date selection for historical data.
             *   Map interface (OpenStreetMap) showing employee movement.
             *   Daily activity feed for selected employee and date.
+
+6. Technical Requirements
+    *   App: React-Native (with Expo)
+    *   Backend: Node.js (with Express.js)
+    *   Database: SQLite (with an interface for future replacement)
+    *   Cache: SQLite (with an interface for future replacement)
+    *   API Documentation: Swagger
+    *   Mapping Service: OpenStreetMap
+    *   OTP Service: Firebase
+
+7. API Endpoints
+    *   Auth
+        *   `POST /api/auth/register`: Register a new employee.
+        *   `POST /api/auth/sendOtp`: Send OTP to a registered and approved user.
+        *   `POST /api/auth/login`: Login an employee with phone number and OTP.
+    *   Admin
+        *   `GET /api/admin/employees`: Get all employees.
+        *   `POST /api/admin/approve`: Approve or reject an employee.
+    *   Activities
+        *   `GET /api/activities/feed`: Get the activity feed (paginated).
+        *   `POST /api/activities`: Create a new activity.
+        *   `POST /api/activities/:activityId/comments`: Add a comment to an activity.
+    *   Location
+        *   `POST /api/location`: Update user's location.
+        *   `GET /api/location/:userId`: Get user's location data.

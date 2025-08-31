@@ -10,6 +10,7 @@ The Activity Logger is a webview-based Android application for startups to track
 *   **Cache**: SQLite (with an interface for future replacement)
 *   **API Documentation**: Swagger
 *   **Mapping Service**: OpenStreetMap
+*   **OTP Service**: Firebase
 
 ## Project Structure
 ```
@@ -64,7 +65,8 @@ The Activity Logger is a webview-based Android application for startups to track
 
 ### Auth
 *   `POST /api/auth/register`: Register a new employee.
-*   `POST /api/auth/login`: Login an employee and get an OTP.
+*   `POST /api/auth/sendOtp`: Send OTP to a registered and approved user.
+*   `POST /api/auth/login`: Login an employee with phone number and OTP.
 
 ### Admin
 *   `GET /api/admin/employees`: Get all employees.

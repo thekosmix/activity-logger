@@ -12,8 +12,8 @@
      for managing employees.
    * /admin/employee/[id]: A dynamic page showing the details for a specific employee. For
      example, /admin/employee/123 would show the details for the employee with the ID 123.
-   * /auth/auth/sendOtp: Handles the sending of an OTP for a registered and approved phoneNumber. The Otp is stored in the cache for 10 minutes.
-   * /api/auth/login: Handles the user login authentication matching it with sentOtp and phoneNumber.
+   * /auth/auth/sendOtp: Handles the sending of an OTP for a registered and approved phoneNumber. The Otp is stored in the cache for 10 minutes. The OTP should be sent using Firebase.
+   * /api/auth/login: Handles the user login authentication matching it with sentOtp and phoneNumber. After succesful login, user should see the homepage.
    * /api/auth/register: Handles the creation of a new user account.
    * /api/admin/employees: Fetches the list of all employees for the admin dashboard.
    * /api/admin/approve: Handles the approval or rejection of an employee by an admin.

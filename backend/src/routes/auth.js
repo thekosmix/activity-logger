@@ -1,6 +1,6 @@
 
 const express = require('express');
-const { register, login } = require('../controllers/authController');
+const { register, login, sendOtp } = require('../controllers/authController');
 
 const router = express.Router();
 
@@ -43,9 +43,9 @@ router.post('/register', register);
 
 /**
  * @swagger
- * /api/auth/login:
+ * /api/auth/sendOtp:
  *   post:
- *     summary: Login an employee and get an OTP
+ *     summary: Send OTP to a registered and approved user
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -55,6 +55,33 @@ router.post('/register', register);
  *             type: object
  *             properties:
  *               phone_number:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: OK
+ *       404:
+ *         description: Not found
+ *       500:
+ *         description: Server error
+ */
+router.post('/sendOtp', sendOtp);
+
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: Login an employee with phone number and OTP
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               phone_number:
+ *                 type: string
+ *               otp:
  *                 type: string
  *     responses:
  *       200:

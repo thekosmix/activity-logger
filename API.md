@@ -31,13 +31,38 @@ curl -X POST http://localhost:3000/api/auth/register -H "Content-Type: applicati
 * **Sample Request:**
 ```bash
 curl -X POST http://localhost:3000/api/auth/login -H "Content-Type: application/json" -d '{
+  "phone_number": "1234567890",
+  "otp": "123456"
+}'
+```
+* **Sample Response:**
+```json
+{
+  "message": "Login successful",
+  "token": "your_jwt_token",
+  "user": {
+    "id": 1,
+    "name": "John Doe",
+    "phone_number": "1234567890",
+    "is_approved": true,
+    "is_admin": false,
+    "image": "http://example.com/image.png"
+  }
+}
+```
+
+### Send OTP
+* **Endpoint:** `POST /api/auth/sendOtp`
+* **Sample Request:**
+```bash
+curl -X POST http://localhost:3000/api/auth/sendOtp -H "Content-Type: application/json" -d '{
   "phone_number": "1234567890"
 }'
 ```
 * **Sample Response:**
 ```json
 {
-  "message": "OTP sent to your phone number"
+  "message": "OTP sent successfully"
 }
 ```
 
