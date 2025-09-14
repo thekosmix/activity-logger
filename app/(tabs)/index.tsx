@@ -6,7 +6,7 @@ import { useRouter } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { getActivities } from '@/services/api';
+import { getActivities } from '../services/api';
 import { useAuth } from '@/app/_layout';
 
 export default function HomeScreen() {

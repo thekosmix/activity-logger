@@ -3,10 +3,10 @@ import { useState } from 'react';
 import { StyleSheet, TextInput, Button, Alert } from 'react-native';
 import { Link } from 'expo-router';
 
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { sendOtp, login } from '@/services/api';
-import { useAuth } from '@/app/_layout';
+import { ThemedText } from '../../components/ThemedText';
+import { ThemedView } from '../../components/ThemedView';
+import { sendOtp, login } from '../services/api';
+import { useAuth } from '../_layout';
 
 export default function LoginScreen() {
   const [phoneNumber, setPhoneNumber] = useState('');

@@ -6,7 +6,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { createActivity } from '@/services/api';
+import { createActivity } from './services/api';
 
 export default function AddActivityScreen() {
   const [title, setTitle] = useState('');
