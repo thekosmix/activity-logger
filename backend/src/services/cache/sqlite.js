@@ -1,6 +1,6 @@
 
 const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database(':memory:');
+const db = new sqlite3.Database('./aclog.db');
 
 const createCacheTable = () => {
   db.run(`
@@ -39,8 +39,20 @@ const set = (key, value, ttl) => {
   });
 };
 
+const del = (key) => {
+  return new Promise((resolve, reject) => {
+    db.run('DELETE FROM Cache WHERE key = ?', [key], (err) => {
+      if (err) {
+        return reject(err);
+      }
+      resolve();
+    });
+  });
+};
+
 module.exports = {
   createCacheTable,
   get,
   set,
+  del,
 };
