@@ -12,13 +12,7 @@ export default function RootLayout() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      router.replace('/(tabs)');
-    } else {
-      router.replace('/(auth)/login');
-    }
-  }, [isAuthenticated]);
+  
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>

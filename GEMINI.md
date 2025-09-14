@@ -19,49 +19,89 @@ node_modules and everything else mentioned in .gitignore
 ```
 /
 ├── app/                  # React-Native frontend
-│   ├── screens/
-│   │   ├── Login.js
-│   │   ├── Register.js
-│   │   ├── Home.js
-│   │   ├── AddActivity.js
-│   │   ├── Menu.js
-│   │   └── Admin/
-│   │       ├── Employees.js
-│   │       └── EmployeeDetails.js
-│   ├── components/
-│   │   ├── ActivityCard.js
-│   │   └── Comment.js
+│   ├── _layout.tsx
+│   ├── +not-found.tsx
+│   ├── add-activity.tsx
+│   ├── (auth)/
+│   │   ├── _layout.tsx
+│   │   ├── login.tsx
+│   │   └── register.tsx
+│   ├── (tabs)/
+│   │   ├── _layout.tsx
+│   │   └── index.tsx
 │   └── services/
-│       ├── api.js
-│       └── location.js
+│       └── api.js
+├── assets/
+│   ├── fonts/
+│   │   └── SpaceMono-Regular.ttf
+│   └── images/
+│       ├── adaptive-icon.png
+│       ├── favicon.png
+│       ├── icon.png
+│       ├── partial-react-logo.png
+│       ├── react-logo.png
+│       ├── react-logo@2x.png
+│       ├── react-logo@3x.png
+│       └── splash-icon.png
 ├── backend/              # Node.js backend
-│   ├── src/
-│   │   ├── controllers/
-│   │   │   ├── authController.js
-│   │   │   ├── activityController.js
-│   │   │   ├── adminController.js
-│   │   │   └── locationController.js
-│   │   ├── models/
-│   │   │   ├── User.js
-│   │   │   ├── Activity.js
-│   │   │   └── Location.js
-│   │   ├── routes/
-│   │   │   ├── auth.js
-│   │   │   ├── activities.js
-│   │   │   ├── admin.js
-│   │   │   └── location.js
-│   │   ├── services/
-│   │   │   ├── cache/
-│   │   │   │   ├── index.js
-│   │   │   │   └── sqlite.js
-│   │   │   └── database/
-│   │   │       ├── index.js
-│   │   │       └── sqlite.js
-│   │   └── utils/
-│   │       └── swagger.js
-│   └── server.js
+│   ├── aclog.db
+│   ├── package.json
+│   ├── node_modules/...
+│   └── src/
+│       ├── server.js
+│       ├── controllers/
+│       │   ├── activityController.js
+│       │   ├── adminController.js
+│       │   ├── authController.js
+│       │   └── locationController.js
+│       ├── models/
+│       │   ├── Activity.js
+│       │   ├── Location.js
+│       │   └── User.js
+│       ├── routes/
+│       │   ├── activities.js
+│       │   ├── admin.js
+│       │   ├── auth.js
+│       │   └── location.js
+│       ├── services/
+│       │   ├── cache/
+│       │   │   ├── index.js
+│       │   │   └── sqlite.js
+│       │   └── database/
+│       │       ├── index.js
+│       │       └── sqlite.js
+│       └── utils/
+│           ├── auth.js
+│           └── swagger.js
+├── components/
+│   ├── Collapsible.tsx
+│   ├── ExternalLink.tsx
+│   ├── HapticTab.tsx
+│   ├── HelloWave.tsx
+│   ├── ParallaxScrollView.tsx
+│   ├── ThemedText.tsx
+│   ├── ThemedView.tsx
+│   └── ui/
+│       ├── IconSymbol.ios.tsx
+│       ├── IconSymbol.tsx
+│       ├── TabBarBackground.ios.tsx
+│       └── TabBarBackground.tsx
+├── constants/
+│   └── Colors.ts
+├── hooks/
+│   ├── useColorScheme.ts
+│   ├── useColorScheme.web.ts
+│   └── useThemeColor.ts
 ├── mocks/
-└── Gemini.md
+│   ├── add-activity.png
+│   ├── employees.png
+│   ├── home.png
+│   ├── login.png
+│   ├── menu.png
+│   └── register.png
+├── node_modules/...
+└── scripts/
+    └── reset-project.js
 ```
 
 ## API Endpoints
