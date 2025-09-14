@@ -1,0 +1,29 @@
+# Dependency directories
+node_modules/
+backend/node_modules/
+
+# Expo
+.expo/
+
+# Git folder
+.git/
+
+# Build outputs
+build/
+dist/
+*.js.map
+
+# Log files
+*.log
+
+# Lock files
+package-lock.json
+backend/package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Environment variables
+.env*
+
+# Test coverage
+coverage/

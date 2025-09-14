@@ -3,6 +3,9 @@ Act as a software prinicpal architect who has deep understanding React-native, e
 ## Project Overview
 The Activity Logger is a webview-based Android application for startups to track employee activities and manage them. Employees can log activities with multimedia and text, while Admins can manage employees and monitor their activities and locations.
 
+## Do not read folder
+node_modules and everything else mentioned in .gitignore
+
 ## Technology Stack
 *   **App**: React-Native (with Expo)
 *   **Backend**: Node.js (with Express.js)

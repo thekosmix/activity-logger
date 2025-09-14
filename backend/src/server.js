@@ -1,6 +1,6 @@
 
 const express = require('express');
-const bodyParser = require('body-parser');
+
 const cors = require('cors');
 const { createTables } = require('./services/database');
 const { createCacheTable } = require('./services/cache');
@@ -19,7 +19,7 @@ const port = process.env.PORT || 3000;
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 
 // Create database tables
 createTables();
