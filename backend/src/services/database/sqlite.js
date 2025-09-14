@@ -5,7 +5,7 @@ const db = new sqlite3.Database('./aclog.db');
 const createTables = () => {
   db.serialize(() => {
     db.run(`
-      CREATE TABLE Users (
+      CREATE TABLE IF NOT EXISTS Users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         phone_number TEXT UNIQUE,
@@ -16,7 +16,7 @@ const createTables = () => {
     `);
 
     db.run(`
-      CREATE TABLE Activities (
+      CREATE TABLE IF NOT EXISTS Activities (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER,
         title TEXT,
@@ -28,7 +28,7 @@ const createTables = () => {
     `);
 
     db.run(`
-      CREATE TABLE Comments (
+      CREATE TABLE IF NOT EXISTS Comments (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         activity_id INTEGER,
         user_id INTEGER,
@@ -40,7 +40,7 @@ const createTables = () => {
     `);
 
     db.run(`
-      CREATE TABLE Locations (
+      CREATE TABLE IF NOT EXISTS Locations (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER,
         latitude REAL,

@@ -4,7 +4,7 @@ const db = new sqlite3.Database('./aclog.db');
 
 const createCacheTable = () => {
   db.run(`
-    CREATE TABLE Cache (
+    CREATE TABLE IF NOT EXISTS Cache (
       key TEXT PRIMARY KEY,
       value TEXT,
       timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
