@@ -1,26 +1,30 @@
 
-import { Stack, useRouter } from 'expo-router';
-import { createContext, useState, useContext, useEffect } from 'react';
+import { Stack } from 'expo-router';
+import { AuthProvider, useAuth } from './context/AuthContext';
 
-const AuthContext = createContext();
+function RootLayoutNav() {
+  const { userToken, isLoading } = useAuth();
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
-
-export default function RootLayout() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const router = useRouter();
-
-  
+  if (isLoading) {
+    return null;
+  }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
-      <Stack>
+    <Stack>
+      {userToken ? (
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      ) : (
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="add-activity" options={{ presentation: 'modal', headerShown: false }} />
-      </Stack>
-    </AuthContext.Provider>
+      )}
+      <Stack.Screen name="add-activity" options={{ presentation: 'modal', headerShown: false }} />
+    </Stack>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <AuthProvider>
+      <RootLayoutNav />
+    </AuthProvider>
   );
 }

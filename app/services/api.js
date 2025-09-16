@@ -49,3 +49,7 @@ export const createActivity = async (data) => {
   });
   return response.json();
 };
+
+export default function ApiService() {
+  return null;
+}

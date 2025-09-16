@@ -24,6 +24,38 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({ storage: storage, fileFilter: fileFilter });
 
 // POST /api/media/upload - Uploads a single media file
+/**
+ * @swagger
+ * /api/media/upload:
+ *   post:
+ *     summary: Upload a media file
+ *     description: Uploads a single image or video file.
+ *     consumes:
+ *       - multipart/form-data
+ *     parameters:
+ *       - in: formData
+ *         name: media
+ *         type: file
+ *         description: The media file to upload.
+ *     responses:
+ *       201:
+ *         description: Media uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Media uploaded successfully
+ *                 filePath:
+ *                   type: string
+ *                   example: /uploads/1631512345678-my-image.jpg
+ *       400:
+ *         description: Bad request
+ *       500:
+ *         description: Internal server error
+ */
 router.post('/upload', upload.single('media'), mediaController.uploadMedia);
 
 module.exports = router;

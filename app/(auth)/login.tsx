@@ -6,12 +6,12 @@ import { Link } from 'expo-router';
 import { ThemedText } from '../../components/ThemedText';
 import { ThemedView } from '../../components/ThemedView';
 import { sendOtp, login } from '../services/api';
-import { useAuth } from '../_layout';
+import { useAuth } from '../context/AuthContext';
 
 export default function LoginScreen() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
-  const { setIsAuthenticated } = useAuth();
+  const { signIn } = useAuth();
 
   const handleSendOtp = async () => {
     try {
@@ -30,8 +30,7 @@ export default function LoginScreen() {
     try {
       const response = await login(phoneNumber, otp);
       if (response.success) {
-        // TODO: Save the token
-        setIsAuthenticated(true);
+        signIn('dummy-token');
       } else {
         Alert.alert('Error', response.message);
       }

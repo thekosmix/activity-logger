@@ -11,8 +11,6 @@ const activityRoutes = require('./routes/activities');
 const locationRoutes = require('./routes/location');
 const mediaRoutes = require('./routes/media');
 
-app.use('/uploads', express.static('uploads'));
-
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./utils/swagger');
 
@@ -35,6 +33,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/activities', activityRoutes);
 app.use('/api/location', locationRoutes);
 app.use('/api/media', mediaRoutes);
+app.use('/uploads', express.static('uploads'));
 
 app.get('/', (req, res) => {
   res.send('Activity Logger API is running!');

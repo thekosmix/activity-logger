@@ -7,11 +7,11 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { getActivities } from '../services/api';
-import { useAuth } from '@/app/_layout';
+import { useAuth } from '../context/AuthContext';
 
 export default function HomeScreen() {
   const [activities, setActivities] = useState([]);
-  const { setIsAuthenticated } = useAuth();
+  const { signOut } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -49,7 +49,7 @@ export default function HomeScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <Button title="Logout" onPress={() => setIsAuthenticated(false)} />
+      <Button title="Logout" onPress={() => signOut()} />
       <FlatList
         data={activities}
         renderItem={renderItem}

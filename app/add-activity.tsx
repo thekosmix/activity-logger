@@ -30,16 +30,19 @@ export default function AddActivityScreen() {
 
       setIsUploading(true);
       const formData = new FormData();
+      const fileType = localUri.split('.').pop();
+      const fileName = localUri.split('/').pop();
+
       formData.append('media', {
         uri: localUri,
-        name: 'upload.jpg', // Or extract from localUri
-        type: 'image/jpeg', // Or detect type
+        name: fileName,
+        type: `image/${fileType}`,
       });
 
       try {
         const response = await axios.post('http://localhost:3000/api/media/upload', formData, {
           headers: {
-            'Content-Type': 'multipart/form-Type',
+            'Content-Type': 'multipart/form-data',
           },
         });
 
