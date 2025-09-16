@@ -18,6 +18,7 @@ const router = express.Router();
  *   post:
  *     summary: Register a new employee
  *     tags: [Auth]
+ *     security: []
  *     requestBody:
  *       required: true
  *       content:
@@ -47,6 +48,7 @@ router.post('/register', register);
  *   post:
  *     summary: Send OTP to a registered and approved user
  *     tags: [Auth]
+ *     security: []
  *     requestBody:
  *       required: true
  *       content:
@@ -72,6 +74,7 @@ router.post('/sendOtp', sendOtp);
  *   post:
  *     summary: Login an employee with phone number and OTP
  *     tags: [Auth]
+ *     security: []
  *     requestBody:
  *       required: true
  *       content:

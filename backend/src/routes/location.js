@@ -4,6 +4,7 @@ const {
   updateLocation,
   getLocation,
 } = require('../controllers/locationController');
+const { authenticateToken } = require('../utils/auth');
 
 const router = express.Router();
 
@@ -42,7 +43,7 @@ const router = express.Router();
  *       500:
  *         description: Server error
  */
-router.post('/', updateLocation);
+router.post('/', authenticateToken, updateLocation);
 
 /**
  * @swagger
@@ -63,7 +64,7 @@ router.post('/', updateLocation);
  *       500:
  *         description: Server error
  */
-router.get('/:userId', getLocation);
+router.get('/:userId', authenticateToken, getLocation);
 
 
 module.exports = router;

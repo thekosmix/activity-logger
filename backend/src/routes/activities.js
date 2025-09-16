@@ -5,6 +5,7 @@ const {
   createActivity,
   addComment,
 } = require('../controllers/activityController');
+const { authenticateToken } = require('../utils/auth');
 
 const router = express.Router();
 
@@ -39,7 +40,7 @@ const router = express.Router();
  *       500:
  *         description: Server error
  */
-router.get('/feed', getActivityFeed);
+router.get('/feed', authenticateToken, getActivityFeed);
 
 /**
  * @swagger
@@ -70,7 +71,7 @@ router.get('/feed', getActivityFeed);
  *       500:
  *         description: Server error
  */
-router.post('/', createActivity);
+router.post('/', authenticateToken, createActivity);
 
 /**
  * @swagger
@@ -104,7 +105,7 @@ router.post('/', createActivity);
  *       500:
  *         description: Server error
  */
-router.post('/:activityId/comments', addComment);
+router.post('/:activityId/comments', authenticateToken, addComment);
 
 
 module.exports = router;

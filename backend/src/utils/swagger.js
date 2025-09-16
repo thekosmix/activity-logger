@@ -9,6 +9,24 @@ const options = {
       version: '1.0.0',
       description: 'API for the Activity Logger application',
     },
+    components: {
+      securitySchemes: {
+        userId: {
+          type: 'apiKey',
+          in: 'header',
+          name: 'user-id'
+        },
+        bearerAuth: {
+          type: 'apiKey',
+          in: 'header',
+          name: 'authorization'
+        }
+      }
+    },
+    security: [{
+      userId: [],
+      bearerAuth: []
+    }],
     servers: [
       {
         url: 'http://localhost:3000',

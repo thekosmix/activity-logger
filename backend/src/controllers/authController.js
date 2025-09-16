@@ -78,7 +78,7 @@ exports.login = async (req, res) => {
     // Clear OTP after successful login
     await cache.del(phone_number);
 
-    const token = generateToken(user);
+    const token = await generateToken(user);
     res.status(200).json({
       message: 'Login successful',
       token,
