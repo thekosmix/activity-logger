@@ -106,3 +106,5 @@ The application will support two distinct user roles:
     *   Location
         *   `POST /api/location`: Update user's location.
         *   `GET /api/location/:userId`: Get user's location data.
+    *   Media
+        *   `POST /api/media/upload`: Upload a media file.

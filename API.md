@@ -210,3 +210,19 @@ curl http://localhost:3000/api/location/1
   }
 ]
 ```
+
+## Media
+
+### Upload a media file
+* **Endpoint:** `POST /api/media/upload`
+* **Sample Request:**
+```bash
+curl -X POST http://localhost:3000/api/media/upload -F 'media=@/path/to/your/image.jpg'
+```
+* **Sample Response:**
+```json
+{
+  "message": "Media uploaded successfully",
+  "filePath": "/uploads/1631512345678-image.jpg"
+}
+```

@@ -58,7 +58,8 @@ The Activity Logger is a webview-based Android application for startups to track
 │       │   ├── activityController.js
 │       │   ├── adminController.js
 │       │   ├── authController.js
-│       │   └── locationController.js
+│       │   │   ├── locationController.js
+│       │   │   └── mediaController.js
 │       ├── models/
 │       │   ├── Activity.js
 │       │   ├── Location.js
@@ -67,7 +68,8 @@ The Activity Logger is a webview-based Android application for startups to track
 │       │   ├── activities.js
 │       │   ├── admin.js
 │       │   ├── auth.js
-│       │   └── location.js
+│       │   ├── location.js
+│       │   └── media.js
 │       ├── services/
 │       │   ├── cache/
 │       │   │   ├── index.js
@@ -128,6 +130,9 @@ The Activity Logger is a webview-based Android application for startups to track
 ### Location
 *   `POST /api/location`: Update user's location.
 *   `GET /api/location/:userId`: Get user's location data.
+
+### Media
+*   `POST /api/media/upload`: Upload a media file.
 
 ## Database Schema
 
