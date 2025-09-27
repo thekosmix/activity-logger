@@ -1,17 +1,17 @@
 
 import { Stack, useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { useAuth } from '../_layout'; // Assuming useAuth is exported from app/_layout.tsx
+import { useAuth } from '../context/AuthContext';
 
 export default function AuthLayout() {
-  const { isAuthenticated } = useAuth();
+  const { userToken } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (userToken) {
       router.replace('/(tabs)');
     }
-  }, [isAuthenticated]);
+  }, [userToken]);
 
   return (
     <Stack>

@@ -13,6 +13,7 @@ const mediaRoutes = require('./routes/media');
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./utils/swagger');
+const { logger, errorLogger } = require('./middlewares/logger');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -21,6 +22,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
 app.use(cors());
 app.use(express.json());
+app.use(logger);
 
 // Create database tables
 createTables();
@@ -34,6 +36,7 @@ app.use('/api/activities', activityRoutes);
 app.use('/api/location', locationRoutes);
 app.use('/api/media', mediaRoutes);
 app.use('/uploads', express.static('uploads'));
+app.use(errorLogger);
 
 app.get('/', (req, res) => {
   res.send('Activity Logger API is running!');

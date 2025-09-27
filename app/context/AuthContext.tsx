@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       } catch (e) {
         // Handle error
       } finally {
-        setUserToken(token);
+        setUserToken(token === '' ? null: token);
         setIsLoading(false);
       }
     };
@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signOut = async () => {
-    await SecureStore.deleteItemAsync('userToken');
+    await SecureStore.setItemAsync('userToken', '');
     setUserToken(null);
   };
 
@@ -54,7 +54,3 @@ export const useAuth = () => {
   }
   return context;
 };
-
-export default function AuthProviderWrapper() {
-  return null;
-}
