@@ -29,9 +29,7 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     try {
       const response = await login(phoneNumber, otp);
-      console.log(response);
-      console.log(response.token);
-      
+    
       if (response.token) {
         signIn(response.token, response.user.id);
       } else {

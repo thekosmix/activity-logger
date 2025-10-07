@@ -17,8 +17,9 @@ export default function HomeScreen() {
   useEffect(() => {
     const fetchActivities = async () => {
       const response = await getActivities();
-      if (response.success) {
-        setActivities(response.data);
+
+      if (response.length) {
+        setActivities(response);
       }
     };
     fetchActivities();
@@ -29,12 +30,12 @@ export default function HomeScreen() {
       <ThemedView style={styles.activityHeader}>
         <IconSymbol name="person.circle" size={40} />
         <ThemedView style={styles.activityHeaderText}>
-          <ThemedText style={styles.user}>{item.user.name}</ThemedText>
+          <ThemedText style={styles.user}>{item.user_name}</ThemedText>
           <ThemedText style={styles.time}>{new Date(item.timestamp).toLocaleDateString()}</ThemedText>
         </ThemedView>
       </ThemedView>
       <ThemedText style={styles.description}>{item.description}</ThemedText>
-      <ThemedView style={styles.activityFooter}>
+      {/* <ThemedView style={styles.activityFooter}>
         <ThemedView style={styles.footerAction}>
           <IconSymbol name="heart" size={20} />
           <ThemedText>{item.likes}</ThemedText>
@@ -43,7 +44,7 @@ export default function HomeScreen() {
           <IconSymbol name="chat.bubble" size={20} />
           <ThemedText>{item.comments.length}</ThemedText>
         </ThemedView>
-      </ThemedView>
+      </ThemedView> */}
     </ThemedView>
   );
 

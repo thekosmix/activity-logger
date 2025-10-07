@@ -62,10 +62,25 @@ export const getActivities = async () => {
 };
 
 export const createActivity = async (data) => {
+
+  let authorization, userId;
+
+  if (Platform.OS === 'web') {
+    authorization = await AsyncStorage.getItem('authorization');
+    userId = await AsyncStorage.getItem('user-id');
+  } else {
+    authorization = await SecureStore.getItemAsync('authorization');
+    userId = await SecureStore.getItemAsync('user-id');
+  }
+
+  data.user_id = userId;
+
   const response = await fetch(`${API_URL}/activities`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'user-id': userId,
+      'authorization': authorization,
     },
     body: JSON.stringify(data),
   });
