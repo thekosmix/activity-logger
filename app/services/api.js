@@ -9,6 +9,22 @@ const apiClient = axios.create({
   baseURL: API_URL,
 });
 
+apiClient.interceptors.request.use(
+  async (config) => {
+    const authHeaders = await getAuthHeaders();
+    if (authHeaders['authorization']) {
+      config.headers['authorization'] = authHeaders['authorization'];
+    }
+    if (authHeaders['user-id']) {
+      config.headers['user-id'] = authHeaders['user-id'];
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 const getAuthHeaders = async () => {
   let authorization, userId;
 
@@ -42,22 +58,17 @@ export const login = async (phoneNumber, otp) => {
 };
 
 export const getActivities = async () => {
-  const headers = await getAuthHeaders();
-  const response = await apiClient.get('/activities/feed', { headers });
+  const response = await apiClient.get('/activities/feed');
   return response.data;
 };
 
 export const uploadMedia = async (formData) => {
-  const headers = await getAuthHeaders();
-  const response = await apiClient.post('/media/upload', formData, {
-    headers,
-  });
+  const response = await apiClient.post('/media/upload', formData);
   return response.data;
 };
 
 export const createActivity = async (data) => {
-  const headers = await getAuthHeaders();
-  const response = await apiClient.post('/activities', data, { headers });
+  const response = await apiClient.post('/activities', data);
   return response.data;
 };
 

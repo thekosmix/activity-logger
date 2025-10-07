@@ -12,7 +12,7 @@ import { createActivity, uploadMedia } from './services/api';
 export default function AddActivityScreen() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [image, setImage] = useState(null); // This will now store the local URI for display before upload, then the uploaded URL
+  const [image, setImage] = useState<string | null>(null); // This will now store the local URI for display before upload, then the uploaded URL
   const [uploadedMediaUrl, setUploadedMediaUrl] = useState(null); // Stores the URL from the backend
   const [isUploading, setIsUploading] = useState(false); // Loading state for media upload
 
@@ -26,6 +26,7 @@ export default function AddActivityScreen() {
 
     if (!result.canceled) { // Changed from !result.cancelled to !result.canceled for newer Expo versions
       const localUri = result.assets[0].uri; // Access uri from assets array
+      console.log('Selected media URI:', localUri);
       setImage(localUri); // Display local image immediately
 
       setIsUploading(true);
@@ -37,7 +38,8 @@ export default function AddActivityScreen() {
         uri: localUri,
         name: fileName,
         type: `image/${fileType}`,
-      });
+      } as any);
+      // formData.append('media', localUri);
 
       try {
         const response = await uploadMedia(formData);
