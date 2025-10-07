@@ -38,7 +38,8 @@ exports.sendOtp = async (req, res) => {
       });
     }
 
-    const otp = Math.floor(100000 + Math.random() * 900000); // 6-digit OTP
+  //  const otp = Math.floor(100000 + Math.random() * 900000); // 6-digit OTP
+    const otp = "1234"; // Fixed OTP for testing purposes
     await cache.set(phone_number, otp, 10 * 60 * 1000); // OTP valid for 10 minutes
     console.log(`OTP for ${phone_number}: ${otp}`); // Log OTP for testing purposes
 
@@ -59,7 +60,7 @@ exports.login = async (req, res) => {
   } = req.body;
   try {
     const storedOtp = await cache.get(phone_number);
-    console.log(`Stored OTP: ${storedOtp}, Provided OTP: ${otp}`); // Log for debugging
+
     if (!storedOtp || storedOtp != otp) {
       return res.status(400).json({
         error: 'Invalid or expired OTP'

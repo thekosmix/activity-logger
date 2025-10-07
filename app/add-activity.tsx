@@ -2,12 +2,12 @@
 import { useState } from 'react';
 import { StyleSheet, TextInput, Button, Image, Alert, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import axios from 'axios'; // Import axios
+
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { createActivity } from './services/api';
+import { createActivity, uploadMedia } from './services/api';
 
 export default function AddActivityScreen() {
   const [title, setTitle] = useState('');
@@ -40,14 +40,10 @@ export default function AddActivityScreen() {
       });
 
       try {
-        const response = await axios.post('http://localhost:3000/api/media/upload', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
+        const response = await uploadMedia(formData);
 
-        if (response.data && response.data.url) {
-          setUploadedMediaUrl(response.data.url); // Store the backend URL
+        if (response && response.url) {
+          setUploadedMediaUrl(response.url); // Store the backend URL
           Alert.alert('Success', 'Media uploaded successfully!');
         } else {
           Alert.alert('Error', 'Failed to get media URL from server.');

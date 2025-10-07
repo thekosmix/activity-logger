@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mediaController = require('../controllers/mediaController');
 const multer = require('multer');
+const { authenticateToken } = require('../utils/auth');
 
 // Configure multer for file uploads (same configuration as in controller, but needed here for middleware)
 const storage = multer.diskStorage({
@@ -35,7 +36,8 @@ const upload = multer({ storage: storage, fileFilter: fileFilter });
  *     parameters:
  *       - in: formData
  *         name: media
- *         type: file
+ *         schema:
+ *           type: file
  *         description: The media file to upload.
  *     responses:
  *       201:
@@ -56,6 +58,6 @@ const upload = multer({ storage: storage, fileFilter: fileFilter });
  *       500:
  *         description: Internal server error
  */
-router.post('/upload', upload.single('media'), mediaController.uploadMedia);
+router.post('/upload', authenticateToken, upload.single('media'), mediaController.uploadMedia);
 
 module.exports = router;

@@ -5,6 +5,7 @@ const generateToken = async (user) => {
   const token = jwt.sign({ id: user.id, is_admin: user.is_admin }, 'your_jwt_secret', { expiresIn: '1h' });
   await cache.set(user.id.toString(), token, 86400);
   return token;
+  //return "token";
 };
 
 const authenticateToken = async (req, res, next) => {
