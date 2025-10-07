@@ -1,3 +1,7 @@
+import { Platform } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const API_URL = 'http://localhost:3000/api';
 
@@ -35,7 +39,25 @@ export const login = async (phoneNumber, otp) => {
 };
 
 export const getActivities = async () => {
-  const response = await fetch(`${API_URL}/activities/feed`);
+
+  let authorization, userId;
+
+  if (Platform.OS === 'web') {
+    authorization = await AsyncStorage.getItem('authorization');
+    userId = await AsyncStorage.getItem('user-id');
+  } else {
+    authorization = await SecureStore.getItemAsync('authorization');
+    userId = await SecureStore.getItemAsync('user-id');
+  }
+
+  const response = await fetch(`${API_URL}/activities/feed`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'user-id': userId,
+      'authorization': authorization,
+    }
+  });
   return response.json();
 };
 
