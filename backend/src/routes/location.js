@@ -29,8 +29,6 @@ const router = express.Router();
  *           schema:
  *             type: object
  *             properties:
- *               user_id:
- *                 type: integer
  *               latitude:
  *                 type: number
  *               longitude:

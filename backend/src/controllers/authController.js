@@ -59,7 +59,7 @@ exports.login = async (req, res) => {
   } = req.body;
   try {
     const storedOtp = await cache.get(phone_number);
-
+    console.log(`Stored OTP: ${storedOtp}, Provided OTP: ${otp}`); // Log for debugging
     if (!storedOtp || storedOtp != otp) {
       return res.status(400).json({
         error: 'Invalid or expired OTP'

@@ -49,6 +49,16 @@ const createTables = () => {
         FOREIGN KEY (user_id) REFERENCES Users(id)
       )
     `);
+
+    db.run(`
+      CREATE TABLE IF NOT EXISTS WorkLog (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        login_time DATETIME,
+        logout_time DATETIME,
+        FOREIGN KEY (user_id) REFERENCES Users(id)
+      )
+    `);
   });
 };
 

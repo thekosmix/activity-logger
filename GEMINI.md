@@ -60,6 +60,7 @@ The Activity Logger is a webview-based Android application for startups to track
 │       │   ├── authController.js
 │       │   │   ├── locationController.js
 │       │   │   └── mediaController.js
+│       │   │   └── workLogController.js
 │       ├── models/
 │       │   ├── Activity.js
 │       │   ├── Location.js
@@ -69,7 +70,8 @@ The Activity Logger is a webview-based Android application for startups to track
 │       │   ├── admin.js
 │       │   ├── auth.js
 │       │   ├── location.js
-│       │   └── media.js
+│       │   ├── media.js
+│       │   └── workLog.js
 │       ├── services/
 │       │   ├── cache/
 │       │   │   ├── index.js
@@ -134,6 +136,9 @@ The Activity Logger is a webview-based Android application for startups to track
 ### Media
 *   `POST /api/media/upload`: Upload a media file.
 
+### WorkLog
+*   `POST /api/worklog`: Clock in or out for the day.
+
 ## Database Schema
 
 ### Users
@@ -165,3 +170,9 @@ The Activity Logger is a webview-based Android application for startups to track
 *   `latitude`: REAL
 *   `longitude`: REAL
 *   `timestamp`: DATETIME
+
+### WorkLog
+*   `id`: INTEGER (Primary Key)
+*   `user_id`: INTEGER (Foreign Key to Users)
+*   `login_time`: DATETIME
+*   `logout_time`: DATETIME

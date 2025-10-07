@@ -55,8 +55,6 @@ router.get('/feed', authenticateToken, getActivityFeed);
  *           schema:
  *             type: object
  *             properties:
- *               user_id:
- *                 type: integer
  *               title:
  *                 type: string
  *               description:
@@ -93,8 +91,6 @@ router.post('/', authenticateToken, createActivity);
  *           schema:
  *             type: object
  *             properties:
- *               user_id:
- *                 type: integer
  *               comment:
  *                 type: string
  *     responses:

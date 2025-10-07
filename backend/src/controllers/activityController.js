@@ -18,7 +18,8 @@ const getActivityFeed = (req, res) => {
 };
 
 const createActivity = (req, res) => {
-  const { user_id, title, description, media_url } = req.body;
+  const user_id = req.headers['user-id'];
+  const { title, description, media_url } = req.body;
 
   if (!user_id || !title || !description) {
     return res.status(400).json({ error: 'User ID, title, and description are required' });
@@ -38,7 +39,8 @@ const createActivity = (req, res) => {
 
 const addComment = (req, res) => {
   const { activityId } = req.params;
-  const { user_id, comment } = req.body;
+  const user_id = req.headers['user-id'];
+  const { comment } = req.body;
 
   if (!user_id || !comment) {
     return res.status(400).json({ error: 'User ID and comment are required' });

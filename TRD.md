@@ -26,6 +26,7 @@
    * /api/location/[userId]: A dynamic route to manage the location data for a specific
      user.
    * /api/media/upload: Upload a media file.
+   * /api/worklog: Clock in or out for the day.
 **Cache**: For storing session storage after successful authentication. It should be done in sqlite but should be done through an interface, so that in future it can be changed to Redis or other in-memory storage.
 **Database**: For storing user information, activity data, and location logs. It should be sqlite so that it can be used as an embedded database. But should be backed with an interface making it easier to change the database in future to MySQL or anything else.
 **APIs**: For communication between the mobile app and the backend.

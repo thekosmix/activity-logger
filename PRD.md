@@ -108,3 +108,5 @@ The application will support two distinct user roles:
         *   `GET /api/location/:userId`: Get user's location data.
     *   Media
         *   `POST /api/media/upload`: Upload a media file.
+    *   WorkLog
+        *   `POST /api/worklog`: Clock in or out for the day.

@@ -10,6 +10,7 @@ const adminRoutes = require('./routes/admin');
 const activityRoutes = require('./routes/activities');
 const locationRoutes = require('./routes/location');
 const mediaRoutes = require('./routes/media');
+const workLogRoutes = require('./routes/workLog');
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./utils/swagger');
@@ -35,6 +36,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/activities', activityRoutes);
 app.use('/api/location', locationRoutes);
 app.use('/api/media', mediaRoutes);
+app.use('/api/worklog', workLogRoutes);
 app.use('/uploads', express.static('uploads'));
 app.use(errorLogger);
 

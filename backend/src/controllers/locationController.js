@@ -2,7 +2,8 @@
 const { db } = require('../services/database');
 
 const updateLocation = (req, res) => {
-  const { user_id, latitude, longitude } = req.body;
+  const user_id = req.headers['user-id'];
+  const { latitude, longitude } = req.body;
 
   if (!user_id || !latitude || !longitude) {
     return res.status(400).json({ error: 'User ID, latitude, and longitude are required' });
