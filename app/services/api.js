@@ -9,32 +9,34 @@ const apiClient = axios.create({
   baseURL: API_URL,
 });
 
-apiClient.interceptors.request.use(
-  async (config) => {
-    const authHeaders = await getAuthHeaders();
-    if (authHeaders['authorization']) {
-      config.headers['authorization'] = authHeaders['authorization'];
-    }
-    if (authHeaders['user-id']) {
-      config.headers['user-id'] = authHeaders['user-id'];
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+// apiClient.interceptors.request.use(
+//   async (config) => {
+//     const authHeaders = await getAuthHeaders();
+//     if (authHeaders['authorization']) {
+//       config.headers['authorization'] = authHeaders['authorization'];
+//     }
+//     if (authHeaders['user-id']) {
+//       config.headers['user-id'] = authHeaders['user-id'];
+//     }
+//     return config;
+//   },
+//   (error) => {
+//     return Promise.reject(error);
+//   }
+// );
 
 const getAuthHeaders = async () => {
-  let authorization, userId;
+  let authorization, userId, user;
 
   if (Platform.OS === 'web') {
     authorization = await AsyncStorage.getItem('authorization');
-    userId = await AsyncStorage.getItem('user-id');
+    user = await AsyncStorage.getItem('user');
   } else {
     authorization = await SecureStore.getItemAsync('authorization');
-    userId = await SecureStore.getItemAsync('user-id');
+    user = await SecureStore.getItemAsync('user');
   }
+
+  userId = JSON.parse(user).id;
 
   return {
     'authorization': authorization,
@@ -58,19 +60,28 @@ export const login = async (phoneNumber, otp) => {
 };
 
 export const getActivities = async () => {
-  const response = await apiClient.get('/activities/feed');
+  const headers = await getAuthHeaders();
+  const response = await apiClient.get('/activities/feed', {headers});
   return response.data;
 };
 
 export const uploadMedia = async (formData) => {
-  const response = await apiClient.post('/media/upload', formData);
+  const headers = await getAuthHeaders();
+  const response = await apiClient.post('/media/upload', formData, {headers});
   return response.data;
 };
 
 export const createActivity = async (data) => {
-  const response = await apiClient.post('/activities', data);
+  const headers = await getAuthHeaders();
+  const response = await apiClient.post('/activities', data, {headers});
   return response.data;
 };
+
+export const clockInOrOut = async (data) => {
+  const headers = await getAuthHeaders();
+  const response = await apiClient.post('/activities/clock', data, {headers});
+  return response.data;
+}
 
 export default function ApiService() {
   return null;

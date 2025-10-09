@@ -1,0 +1,86 @@
+
+import { useState } from 'react';
+import { StyleSheet, TouchableOpacity, Switch, Button } from 'react-native';
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
+import { IconSymbol } from '@/components/ui/IconSymbol';
+import { useAuth } from '../context/AuthContext';
+import { clockInOrOut } from '../services/api';
+
+export default function MenuScreen() {
+  const { user, signOut } = useAuth();
+  const [isClockedIn, setIsClockedIn] = useState(false);
+
+  const handleClockInOut = async () => {
+    const response = await clockInOrOut({is_clock_in: !isClockedIn});
+    
+    if (response.id) {
+      setIsClockedIn(previousState => !previousState);
+    }
+  };
+
+  return (
+    <ThemedView style={styles.container}>
+      <ThemedView style={styles.profileContainer}>
+        <IconSymbol name="person.circle" size={80} />
+        <ThemedView style={styles.profileText}>
+          <ThemedText style={styles.name}>
+            {user ? JSON.parse(user).name : ''}
+          </ThemedText>
+          <ThemedText style={styles.id}>ID:
+            {user ? JSON.parse(user).id : ''}
+          </ThemedText>
+        </ThemedView>
+      </ThemedView>
+      <TouchableOpacity style={styles.changePhotoButton}>
+        <ThemedText style={styles.changePhotoText}>Change Photo</ThemedText>
+      </TouchableOpacity>
+      <ThemedView style={styles.workLogContainer}>
+        <ThemedText>Clock in for the day</ThemedText>
+        <Switch
+          trackColor={{ false: '#767577', true: '#81b0ff' }}
+          thumbColor={isClockedIn ? '#f5dd4b' : '#f4f3f4'}
+          ios_backgroundColor="#3e3e3e"
+          onValueChange={handleClockInOut}
+          value={isClockedIn}
+        />
+      </ThemedView>
+      <Button title="Logout" onPress={() => signOut()} />
+    </ThemedView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+  profileContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  profileText: {
+    marginLeft: 20,
+  },
+  name: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  id: {
+    fontSize: 16,
+    color: 'gray',
+  },
+  changePhotoButton: {
+    marginBottom: 20,
+  },
+  changePhotoText: {
+    color: '#007BFF',
+  },
+  workLogContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+});

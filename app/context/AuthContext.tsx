@@ -6,9 +6,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface AuthContextType {
   userToken: string | null;
-  userId: string | null;
+  user: string | null;
   isLoading: boolean;
-  signIn: (token: string, userId: string) => Promise<void>;
+  signIn: (token: string, user: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -16,50 +16,53 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [userToken, setUserToken] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [user, setUser] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadToken = async () => {
-      let token = null;
+      let auth, u = null;
       try {
-        token = await SecureStore.getItemAsync('userToken');
+        auth = await SecureStore.getItemAsync('authorization');
+        u = await SecureStore.getItemAsync('user');
       } catch (e) {
         // Handle error
       } finally {
-        setUserToken(token === '' ? null: token);
+        setUserToken(auth === undefined || auth === '' ? null : auth);
+        setUser(u === undefined || u === '' ? null : u);
         setIsLoading(false);
       }
     };
     loadToken();
   }, []);
 
-  const signIn = async (token: string, userId: string) => {
+  const signIn = async (token: string, user: string) => {
     if (Platform.OS === 'web') {
       await AsyncStorage.setItem('authorization', token);
-      await AsyncStorage.setItem('user-id', userId);
+      await AsyncStorage.setItem('user', user);
+      console.log('user stored in AsyncStorage:', user);
     } else {
       await SecureStore.setItemAsync('authorization', token);
-      await SecureStore.setItemAsync('user-id', userId);
+      await SecureStore.setItemAsync('user', user);
     }
     setUserToken(token);
-    setUserId(userId);
+    setUser(user);
   };
 
   const signOut = async () => {
     if (Platform.OS === 'web') {
       await AsyncStorage.setItem('authorization', '');
-      await AsyncStorage.setItem('user-id', '');   
+      await AsyncStorage.setItem('user', '');   
     } else {
       await SecureStore.setItemAsync('authorization', '');
-      await SecureStore.setItemAsync('user-id', '');
+      await SecureStore.setItemAsync('user', '');
     }
     setUserToken(null);
-    setUserId(null);
+    setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ userToken, userId, isLoading, signIn, signOut }}>
+    <AuthContext.Provider value={{ userToken, user, isLoading, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );

@@ -31,7 +31,7 @@ export default function LoginScreen() {
       const response = await login(phoneNumber, otp);
     
       if (response.token) {
-        signIn(response.token, response.user.id);
+        signIn(response.token, JSON.stringify(response.user));
       } else {
         Alert.alert('Error', response.message);
       }

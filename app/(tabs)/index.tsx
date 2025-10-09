@@ -50,7 +50,7 @@ export default function HomeScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <Button title="Logout" onPress={() => signOut()} />
+
       <FlatList
         data={activities}
         renderItem={renderItem}
