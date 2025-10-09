@@ -12,9 +12,9 @@ function RootLayoutNav() {
   return (
     <Stack>
       {userToken ? (
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false, title: '' }} />
       ) : (
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)" options={{ headerShown: false, title: '' }} />
       )}
       <Stack.Screen name="add-activity" options={{ presentation: 'modal', headerShown: false }} />
     </Stack>

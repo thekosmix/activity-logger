@@ -39,7 +39,7 @@ export default function HomeScreen() {
         }
         
         // If we received fewer items than the limit, there's no more data
-        if (response.length < limit) {
+        if (response.length < PAGE_SIZE) {
           setHasMore(false);
         } else {
           setHasMore(true);

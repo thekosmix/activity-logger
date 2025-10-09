@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { StyleSheet, TextInput, Button, Image, Alert, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { useRouter } from 'expo-router';
 
 
 import { ThemedText } from '@/components/ThemedText';
@@ -15,6 +16,7 @@ export default function AddActivityScreen() {
   const [image, setImage] = useState<string | null>(null); // This will now store the local URI for display before upload, then the uploaded URL
   const [uploadedMediaUrl, setUploadedMediaUrl] = useState(null); // Stores the URL from the backend
   const [isUploading, setIsUploading] = useState(false); // Loading state for media upload
+  const router = useRouter();
 
   const pickImage = async () => {
     // Update the ImagePicker to return base64 by adding base64: true
@@ -73,11 +75,18 @@ export default function AddActivityScreen() {
     try {
       // Use uploadedMediaUrl if available, otherwise null
       const response = await createActivity({ title, description, media_url: uploadedMediaUrl });
-      if (response.success) {
-        Alert.alert('Success', 'Activity created successfully.');
-        // TODO: Navigate back to the home screen
+      if (response.id) {
+        Alert.alert('Success', 'Activity created successfully.', [
+          {
+            text: 'OK',
+            onPress: () => {
+              // Navigate back to the home screen
+              router.back();
+            }
+          }
+        ]);
       } else {
-        Alert.alert('Error', response.message);
+        Alert.alert('Error', response.message || 'Failed to create activity');
       }
     } catch (error) {
       Alert.alert('Error', 'An error occurred while creating the activity. Please try again.');
