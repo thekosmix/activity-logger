@@ -6,10 +6,12 @@ import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useAuth } from '../context/AuthContext';
 import { clockInOrOut } from '../services/api';
+import { useRouter } from 'expo-router';
 
 export default function MenuScreen() {
   const { user, signOut } = useAuth();
   const [isClockedIn, setIsClockedIn] = useState(false);
+  const router = useRouter();
 
   const handleClockInOut = async () => {
     const response = await clockInOrOut({is_clock_in: !isClockedIn});
@@ -45,7 +47,10 @@ export default function MenuScreen() {
           value={isClockedIn}
         />
       </ThemedView>
-      <Button title="Logout" onPress={() => signOut()} />
+      <Button title="Logout" onPress={() => {
+        signOut()
+        router.replace('/(auth)/login');
+      }} />
     </ThemedView>
   );
 }

@@ -79,7 +79,7 @@ export const createActivity = async (data) => {
 
 export const clockInOrOut = async (data) => {
   const headers = await getAuthHeaders();
-  const response = await apiClient.post('/activities/clock', data, {headers});
+  const response = await apiClient.post('/worklog', data, {headers});
   return response.data;
 }
 
