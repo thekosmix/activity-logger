@@ -17,32 +17,40 @@ export default function AddActivityScreen() {
   const [isUploading, setIsUploading] = useState(false); // Loading state for media upload
 
   const pickImage = async () => {
+    // Update the ImagePicker to return base64 by adding base64: true
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
+      base64: true, // This will return the base64 string of the image
     });
 
-    if (!result.canceled) { // Changed from !result.cancelled to !result.canceled for newer Expo versions
-      const localUri = result.assets[0].uri; // Access uri from assets array
+    if (!result.canceled) {
+      const localUri = result.assets[0].uri;
+      const base64String = result.assets[0].base64; // Get the base64 string
       console.log('Selected media URI:', localUri);
       setImage(localUri); // Display local image immediately
 
       setIsUploading(true);
-      const formData = new FormData();
       const fileType = localUri.split('.').pop();
-      const fileName = localUri.split('/').pop();
+      
+      // Determine the correct MIME type based on file extension
+      let mimeType;
+      if (['jpg', 'jpeg', 'png', 'gif'].includes(fileType.toLowerCase())) {
+        mimeType = `image/${fileType}`;
+      } else if (['mp4', 'mov', 'avi', 'mkv'].includes(fileType.toLowerCase())) {
+        mimeType = `video/${fileType}`;
+      } else {
+        mimeType = `application/${fileType}`;
+      }
 
-      formData.append('media', {
-        uri: localUri,
-        name: fileName,
-        type: `image/${fileType}`,
-      } as any);
-      // formData.append('media', localUri);
+      const mediaData = {
+        media: `data:${mimeType};base64,${base64String}` // Format as data URL
+      };
 
       try {
-        const response = await uploadMedia(formData);
+        const response = await uploadMedia(mediaData);
 
         if (response && response.url) {
           setUploadedMediaUrl(response.url); // Store the backend URL

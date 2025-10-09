@@ -1,6 +1,6 @@
 
 import { Stack } from 'expo-router';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider, useAuth } from '../context/AuthContext';
 
 function RootLayoutNav() {
   const { userToken, isLoading } = useAuth();

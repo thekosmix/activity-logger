@@ -9,22 +9,6 @@ const apiClient = axios.create({
   baseURL: API_URL,
 });
 
-// apiClient.interceptors.request.use(
-//   async (config) => {
-//     const authHeaders = await getAuthHeaders();
-//     if (authHeaders['authorization']) {
-//       config.headers['authorization'] = authHeaders['authorization'];
-//     }
-//     if (authHeaders['user-id']) {
-//       config.headers['user-id'] = authHeaders['user-id'];
-//     }
-//     return config;
-//   },
-//   (error) => {
-//     return Promise.reject(error);
-//   }
-// );
-
 const getAuthHeaders = async () => {
   let authorization, userId, user;
 
@@ -59,16 +43,33 @@ export const login = async (phoneNumber, otp) => {
   return response.data;
 };
 
-export const getActivities = async () => {
+export const getActivities = async (page = 1, limit = 10) => {
   const headers = await getAuthHeaders();
-  const response = await apiClient.get('/activities/feed', {headers});
+  const response = await apiClient.get(`/activities/feed?page=${page}&limit=${limit}`, {headers});
   return response.data;
 };
 
-export const uploadMedia = async (formData) => {
-  const headers = await getAuthHeaders();
-  const response = await apiClient.post('/media/upload', formData, {headers});
-  return response.data;
+export const uploadMedia = async (data) => {
+  const authHeaders = await getAuthHeaders();
+  
+  // Set the content-type to application/json for --data-raw format
+  const headers = {
+    ...authHeaders,
+    'Content-Type': 'application/json',
+  };
+  
+  const response = await fetch(`${API_URL}/media/upload`, {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify(data), // Send as JSON for --data-raw format
+  });
+  
+  if (!response.ok) {
+    const errorData = await response.text();
+    throw new Error(`HTTP error! status: ${response.status}, details: ${errorData}`);
+  }
+  
+  return await response.json();
 };
 
 export const createActivity = async (data) => {

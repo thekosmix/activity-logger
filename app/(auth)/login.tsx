@@ -6,7 +6,7 @@ import { Link } from 'expo-router';
 import { ThemedText } from '../../components/ThemedText';
 import { ThemedView } from '../../components/ThemedView';
 import { sendOtp, login } from '../services/api';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 
 export default function LoginScreen() {
   const [phoneNumber, setPhoneNumber] = useState('');

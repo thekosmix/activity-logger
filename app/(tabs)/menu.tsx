@@ -4,7 +4,7 @@ import { StyleSheet, TouchableOpacity, Switch, Button } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import { clockInOrOut } from '../services/api';
 import { useRouter } from 'expo-router';
 
@@ -24,7 +24,7 @@ export default function MenuScreen() {
   return (
     <ThemedView style={styles.container}>
       <ThemedView style={styles.profileContainer}>
-        <IconSymbol name="person.circle" size={80} />
+        <IconSymbol name="person.circle" size={80} color="#000" />
         <ThemedView style={styles.profileText}>
           <ThemedText style={styles.name}>
             {user ? JSON.parse(user).name : ''}
@@ -48,7 +48,7 @@ export default function MenuScreen() {
         />
       </ThemedView>
       <Button title="Logout" onPress={() => {
-        signOut()
+        signOut();
         router.replace('/(auth)/login');
       }} />
     </ThemedView>
