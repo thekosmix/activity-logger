@@ -2,6 +2,7 @@
 const express = require('express');
 const {
   getActivityFeed,
+  getActivityDetail,
   createActivity,
   addComment,
 } = require('../controllers/activityController');
@@ -61,6 +62,10 @@ router.get('/feed', authenticateToken, getActivityFeed);
  *                 type: string
  *               media_url:
  *                 type: string
+ *               latitude:
+ *                 type: number
+ *               longitude:
+ *                 type: number
  *     responses:
  *       201:
  *         description: Created
@@ -101,6 +106,9 @@ router.post('/', authenticateToken, createActivity);
  *       500:
  *         description: Server error
  */
+/**\n * @swagger\n * /api/activities/{activityId}:\n *   get:\n *     summary: Get activity details with comments\n *     tags: [Activities]\n *     parameters:\n *       - in: path\n *         name: activityId\n *         schema:\n *           type: integer\n *         required: true\n *         description: The activity ID\n *     responses:\n *       200:\n *         description: Activity details with comments\n *         content:\n *           application/json:\n *             schema:\n *               type: object\n *               properties:\n *                 activity:\n *                   $ref: '#/components/schemas/Activity'\n *                 comments:\n *                   type: array\n *                   items:\n *                     $ref: '#/components/schemas/Comment'\n *       400:\n *         description: Bad request\n *       500:\n *         description: Server error\n */
+router.get('/:activityId', authenticateToken, getActivityDetail);
+
 router.post('/:activityId/comments', authenticateToken, addComment);
 
 

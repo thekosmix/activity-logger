@@ -78,6 +78,18 @@ export const createActivity = async (data) => {
   return response.data;
 };
 
+export const getActivityDetails = async (id) => {
+  const headers = await getAuthHeaders();
+  const response = await apiClient.get(`/activities/${id}`, {headers});
+  return response.data;
+};
+
+export const addComment = async (activityId, comment) => {
+  const headers = await getAuthHeaders();
+  const response = await apiClient.post(`/activities/${activityId}/comments`, { comment }, {headers});
+  return response.data;
+};
+
 export const clockInOrOut = async (data) => {
   const headers = await getAuthHeaders();
   const response = await apiClient.post('/worklog', data, {headers});

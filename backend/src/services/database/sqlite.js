@@ -91,35 +91,6 @@ const get = (sql, params = []) => {
   });
 }
 
-
-// const run = (sql, params = []) => {
-//   return new Promise((resolve, reject) => {
-//     db.run(sql, params, function (err) {
-//       if (err) {
-//         console.error('Error running sql ' + sql);
-//         console.error(err);
-//         reject(err);
-//       } else {
-//         resolve({ id: this.lastID });
-//       }
-//     });
-//   });
-// }
-
-// const get = (sql, params = []) => {
-//   return new Promise((resolve, reject) => {
-//     db.get(sql, params, (err, result) => {
-//       if (err) {
-//         console.error('Error running sql: ' + sql);
-//         console.error(err);
-//         reject(err);
-//       } else {
-//         resolve(result);
-//       }
-//     });
-//   });
-// }
-
 module.exports = {
   db,
   createTables,

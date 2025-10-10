@@ -1,7 +1,8 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { StyleSheet, TextInput, Button, Image, Alert, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
 
 
@@ -16,7 +17,22 @@ export default function AddActivityScreen() {
   const [image, setImage] = useState<string | null>(null); // This will now store the local URI for display before upload, then the uploaded URL
   const [uploadedMediaUrl, setUploadedMediaUrl] = useState(null); // Stores the URL from the backend
   const [isUploading, setIsUploading] = useState(false); // Loading state for media upload
+  const [location, setLocation] = useState<Location.LocationObjectCoords | null>(null);
+  const [locationError, setLocationError] = useState<string | null>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setLocationError('Permission to access location was denied');
+        return;
+      }
+
+      let locationResult = await Location.getCurrentPositionAsync({});
+      setLocation(locationResult.coords);
+    })();
+  }, []);
 
   const pickImage = async () => {
     // Update the ImagePicker to return base64 by adding base64: true
@@ -31,7 +47,7 @@ export default function AddActivityScreen() {
     if (!result.canceled) {
       const localUri = result.assets[0].uri;
       const base64String = result.assets[0].base64; // Get the base64 string
-      console.log('Selected media URI:', localUri);
+      
       setImage(localUri); // Display local image immediately
 
       setIsUploading(true);
@@ -74,7 +90,18 @@ export default function AddActivityScreen() {
   const handleAddActivity = async () => {
     try {
       // Use uploadedMediaUrl if available, otherwise null
-      const response = await createActivity({ title, description, media_url: uploadedMediaUrl });
+      const activityData = { 
+        title, 
+        description, 
+        media_url: uploadedMediaUrl,
+        // Include location data if available
+        ...(location && { 
+          latitude: location.latitude, 
+          longitude: location.longitude 
+        })
+      };
+      
+      const response = await createActivity(activityData);
       if (response.id) {
         Alert.alert('Success', 'Activity created successfully.', [
           {

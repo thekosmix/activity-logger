@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest",
     "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
+    "dev": "nodemon src/server.js",
+    "migrate": "node migrations/add_location_to_activities.js"
   },
   "keywords": [],
   "author": "",

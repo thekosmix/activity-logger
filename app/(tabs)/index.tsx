@@ -75,14 +75,10 @@ export default function HomeScreen() {
   }, []);
 
   const renderItem = ({ item }) => (
-    <ThemedView style={styles.activityContainer}>
-      <ThemedView style={styles.activityHeader}>
-        <IconSymbol name="person.circle" size={40} color="#000" />
-        <ThemedView style={styles.activityHeaderText}>
-          <ThemedText style={styles.user}>{item.user_name}</ThemedText>
-          <ThemedText style={styles.time}>{new Date(item.timestamp).toLocaleString()}</ThemedText>
-        </ThemedView>
-      </ThemedView>
+    <TouchableOpacity 
+      style={styles.activityContainer} 
+      onPress={() => router.push(`/activity-detail?id=${item.id}`)}
+    >
       <ThemedText style={styles.title}>{item.title}</ThemedText>
       <ThemedText style={styles.description}>{item.description}</ThemedText>
       {item.media_url ? (
@@ -92,17 +88,11 @@ export default function HomeScreen() {
           resizeMode="cover"
         />
       ) : null}
-      {/* <ThemedView style={styles.activityFooter}>
-        <ThemedView style={styles.footerAction}>
-          <IconSymbol name="heart" size={20} />
-          <ThemedText>{item.likes}</ThemedText>
-        </ThemedView>
-        <ThemedView style={styles.footerAction}>
-          <IconSymbol name="chat.bubble" size={20} />
-          <ThemedText>{item.comments.length}</ThemedText>
-        </ThemedView>
-      </ThemedView> */}
-    </ThemedView>
+      <ThemedView style={styles.activityFooter}>
+        <ThemedText style={styles.time}>{new Date(item.timestamp).toLocaleString()}</ThemedText>
+        <ThemedText style={styles.user}>{item.user_name}</ThemedText>
+      </ThemedView>
+    </TouchableOpacity>
   );
 
   return (
@@ -139,14 +129,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
   },
-  activityHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  activityHeaderText: {
-    marginLeft: 10,
-  },
+
   user: {
     fontWeight: 'bold',
   },
@@ -173,6 +156,11 @@ const styles = StyleSheet.create({
   activityFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 10,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
   },
   footerAction: {
     flexDirection: 'row',

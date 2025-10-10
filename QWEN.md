@@ -155,6 +155,8 @@ The Activity Logger is a webview-based Android application for startups to track
 *   `title`: TEXT
 *   `description`: TEXT
 *   `media_url`: TEXT
+*   `latitude`: REAL (Optional latitude coordinate)
+*   `longitude`: REAL (Optional longitude coordinate)
 *   `timestamp`: DATETIME
 
 ### Comments
