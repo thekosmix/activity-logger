@@ -23,8 +23,24 @@ const updateLocation = (req, res) => {
 
 const getLocation = (req, res) => {
   const { userId } = req.params;
+  const { from, to } = req.query;
 
-  db.all('SELECT * FROM Locations WHERE user_id = ? ORDER BY timestamp DESC', [userId], (err, rows) => {
+  let query = 'SELECT * FROM Locations WHERE user_id = ?';
+  let params = [userId];
+
+  // Add date range filters if provided
+  if (from) {
+    query += ' AND timestamp >= ?';
+    params.push(from);
+  }
+  if (to) {
+    query += ' AND timestamp <= ?';
+    params.push(to);
+  }
+
+  query += ' ORDER BY timestamp DESC';
+
+  db.all(query, params, (err, rows) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }

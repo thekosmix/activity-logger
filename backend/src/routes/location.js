@@ -56,6 +56,18 @@ router.post('/', authenticateToken, updateLocation);
  *           type: integer
  *         required: true
  *         description: The user ID
+ *       - in: query
+ *         name: from
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Start date in YYYY-MM-DD format
+ *       - in: query
+ *         name: to
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: End date in YYYY-MM-DD format
  *     responses:
  *       200:
  *         description: OK

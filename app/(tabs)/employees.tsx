@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, FlatList, Button, Alert } from 'react-native';
+import { StyleSheet, View, Text, FlatList, Button, Alert, TouchableOpacity } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { getEmployees, approveEmployee } from '../services/api';
+import { useRouter } from 'expo-router';
 
 export default function EmployeesScreen() {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     loadEmployees();
@@ -46,7 +48,10 @@ export default function EmployeesScreen() {
   };
 
   const renderEmployee = ({ item }) => (
-    <ThemedView style={styles.employeeContainer}>
+    <TouchableOpacity 
+      style={styles.employeeContainer}
+      onPress={() => router.push(`/employee-detail?employeeId=${encodeURIComponent(JSON.stringify(item))}`)}
+    >
       <ThemedView style={styles.employeeInfo}>
         <IconSymbol name="person.circle" size={40} color="#000" />
         <ThemedView style={styles.employeeDetails}>
@@ -63,17 +68,23 @@ export default function EmployeesScreen() {
           <Button 
             title="Approve" 
             color="#4CAF50" 
-            onPress={() => handleApproveReject(item.id, true)} 
+            onPress={(e) => {
+              e.stopPropagation(); // Prevent the parent TouchableOpacity from triggering
+              handleApproveReject(item.id, true)
+            }} 
           />
           <View style={styles.spacer} />
           <Button 
             title="Reject" 
             color="#F44336" 
-            onPress={() => handleApproveReject(item.id, false)} 
+            onPress={(e) => {
+              e.stopPropagation(); // Prevent the parent TouchableOpacity from triggering
+              handleApproveReject(item.id, false)
+            }} 
           />
         </ThemedView>
       )}
-    </ThemedView>
+    </TouchableOpacity>
   );
 
   if (loading) {

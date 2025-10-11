@@ -114,6 +114,12 @@ export const approveEmployee = async (id, is_approved) => {
   return response.data;
 }
 
+export const getEmployeeLocations = async (userId, fromDate, toDate) => {
+  const headers = await getAuthHeaders();
+  const response = await apiClient.get(`/location/${userId}?from=${fromDate}&to=${toDate}`, {headers});
+  return response.data;
+}
+
 export default function ApiService() {
   return null;
 }
