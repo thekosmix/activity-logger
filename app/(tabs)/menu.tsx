@@ -1,11 +1,12 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { StyleSheet, TouchableOpacity, Switch, Button } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useAuth } from '../../context/AuthContext';
 import { clockInOrOut } from '../services/api';
+import BackgroundLocationService from '../services/locationService';
 import { useRouter } from 'expo-router';
 
 export default function MenuScreen() {
@@ -14,12 +15,38 @@ export default function MenuScreen() {
   const router = useRouter();
 
   const handleClockInOut = async () => {
-    const response = await clockInOrOut({is_clock_in: !isClockedIn});
-    
-    if (response.id) {
-      setIsClockedIn(previousState => !previousState);
+    try {
+      const response = await clockInOrOut({is_clock_in: !isClockedIn});
+      
+      if (response.id) {
+        const newClockedInStatus = !isClockedIn;
+        setIsClockedIn(newClockedInStatus);
+        
+        // Start or stop location tracking based on clock-in status
+        if (newClockedInStatus) {
+          // User is clocking in - start location tracking
+          const success = await BackgroundLocationService.startTracking();
+          if (!success) {
+            console.error('Failed to start location tracking');
+          }
+        } else {
+          // User is clocking out - stop location tracking
+          BackgroundLocationService.stopTracking();
+        }
+      }
+    } catch (error) {
+      console.error('Error with clock in/out:', error);
     }
   };
+
+  useEffect(() => {
+    // Cleanup: Stop location tracking when the component unmounts
+    return () => {
+      if (isClockedIn) {
+        BackgroundLocationService.stopTracking();
+      }
+    };
+  }, []);
 
   return (
     <ThemedView style={styles.container}>
@@ -48,6 +75,10 @@ export default function MenuScreen() {
         />
       </ThemedView>
       <Button title="Logout" onPress={() => {
+        // Stop location tracking on logout
+        if (isClockedIn) {
+          BackgroundLocationService.stopTracking();
+        }
         signOut();
         router.replace('/(auth)/login');
       }} />

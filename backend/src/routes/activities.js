@@ -78,6 +78,40 @@ router.post('/', authenticateToken, createActivity);
 
 /**
  * @swagger
+ * /api/activities/{activityId}:
+ *   get:
+ *     summary: Get activity details with comments
+ *     tags: [Activities]
+ *     parameters:
+ *       - in: path
+ *         name: activityId
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: The activity ID
+ *     responses:
+ *       200:
+ *         description: Activity details with comments
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 activity:
+ *                   $ref: '#/components/schemas/Activity'
+ *                 comments:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Comment'
+ *       400:
+ *         description: Bad request
+ *       500:
+ *         description: Server error
+ */
+router.get('/:activityId', authenticateToken, getActivityDetail);
+
+/**
+ * @swagger
  * /api/activities/{activityId}/comments:
  *   post:
  *     summary: Add a comment to an activity
@@ -106,9 +140,6 @@ router.post('/', authenticateToken, createActivity);
  *       500:
  *         description: Server error
  */
-/**\n * @swagger\n * /api/activities/{activityId}:\n *   get:\n *     summary: Get activity details with comments\n *     tags: [Activities]\n *     parameters:\n *       - in: path\n *         name: activityId\n *         schema:\n *           type: integer\n *         required: true\n *         description: The activity ID\n *     responses:\n *       200:\n *         description: Activity details with comments\n *         content:\n *           application/json:\n *             schema:\n *               type: object\n *               properties:\n *                 activity:\n *                   $ref: '#/components/schemas/Activity'\n *                 comments:\n *                   type: array\n *                   items:\n *                     $ref: '#/components/schemas/Comment'\n *       400:\n *         description: Bad request\n *       500:\n *         description: Server error\n */
-router.get('/:activityId', authenticateToken, getActivityDetail);
-
 router.post('/:activityId/comments', authenticateToken, addComment);
 
 

@@ -96,6 +96,12 @@ export const clockInOrOut = async (data) => {
   return response.data;
 }
 
+export const updateLocation = async (latitude, longitude) => {
+  const headers = await getAuthHeaders();
+  const response = await apiClient.post('/location', { latitude, longitude }, {headers});
+  return response.data;
+}
+
 export default function ApiService() {
   return null;
 }
