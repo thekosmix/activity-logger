@@ -1,7 +1,7 @@
 
 const express = require('express');
 const { getEmployees, approveEmployee } = require('../controllers/adminController');
-const { authenticateToken } = require('../utils/auth');
+const { authenticateToken, authenticateAdmin } = require('../utils/auth');
 
 const router = express.Router();
 
@@ -25,7 +25,7 @@ const router = express.Router();
  *       500:
  *         description: Server error
  */
-router.get('/employees', authenticateToken, getEmployees);
+router.get('/employees', authenticateAdmin, getEmployees);
 
 /**
  * @swagger
@@ -54,7 +54,7 @@ router.get('/employees', authenticateToken, getEmployees);
  *       500:
  *         description: Server error
  */
-router.post('/approve', authenticateToken, approveEmployee);
+router.post('/approve', authenticateAdmin, approveEmployee);
 
 
 module.exports = router;

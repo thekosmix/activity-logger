@@ -13,6 +13,9 @@ export default function MenuScreen() {
   const { user, signOut } = useAuth();
   const [isClockedIn, setIsClockedIn] = useState(false);
   const router = useRouter();
+  
+  // Check if the user is an admin
+  const isAdmin = user ? JSON.parse(user).is_admin : false;
 
   const handleClockInOut = async () => {
     try {
@@ -74,14 +77,25 @@ export default function MenuScreen() {
           value={isClockedIn}
         />
       </ThemedView>
-      <Button title="Logout" onPress={() => {
-        // Stop location tracking on logout
-        if (isClockedIn) {
-          BackgroundLocationService.stopTracking();
-        }
-        signOut();
-        router.replace('/(auth)/login');
-      }} />
+      
+      {/* Show "Manage Employees" button only for admins */}
+      {isAdmin && (
+        <Button 
+          title="Manage Employees" 
+          onPress={() => router.push('/(tabs)/employees')}
+        />
+      )}
+      
+      <ThemedView style={styles.logoutButtonContainer}>
+        <Button title="Logout" onPress={() => {
+          // Stop location tracking on logout
+          if (isClockedIn) {
+            BackgroundLocationService.stopTracking();
+          }
+          signOut();
+          router.replace('/(auth)/login');
+        }} />
+      </ThemedView>
     </ThemedView>
   );
 }
@@ -118,5 +132,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 20,
+  },
+  logoutButtonContainer: {
+    marginTop: 10,
   },
 });

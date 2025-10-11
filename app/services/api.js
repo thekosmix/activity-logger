@@ -3,7 +3,7 @@ import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000/api';
+const API_URL = 'http://100.115.92.199:3000/api';
 
 const apiClient = axios.create({
   baseURL: API_URL,
@@ -99,6 +99,18 @@ export const clockInOrOut = async (data) => {
 export const updateLocation = async (latitude, longitude) => {
   const headers = await getAuthHeaders();
   const response = await apiClient.post('/location', { latitude, longitude }, {headers});
+  return response.data;
+}
+
+export const getEmployees = async () => {
+  const headers = await getAuthHeaders();
+  const response = await apiClient.get('/admin/employees', {headers});
+  return response.data;
+};
+
+export const approveEmployee = async (id, is_approved) => {
+  const headers = await getAuthHeaders();
+  const response = await apiClient.post('/admin/approve', { id, is_approved }, {headers});
   return response.data;
 }
 

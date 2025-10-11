@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, Image, TextInput, Button, Alert, Linking, TouchableOpacity } from 'react-native';
+import { StyleSheet, ScrollView, View, Text, Image, TextInput, Button, Alert, Linking, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -93,63 +93,68 @@ export default function ActivityDetailScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      {/* Activity details */}
-      <ThemedView style={styles.activityContainer}>
-        <ThemedText style={styles.title}>{activity.title}</ThemedText>
-        <ThemedText style={styles.description}>{activity.description}</ThemedText>
-        {activity.media_url ? (
-          <Image 
-            source={{ uri: activity.media_url }} 
-            style={styles.media}
-            resizeMode="cover"
-          />
-        ) : null}
-        <ThemedView style={styles.activityFooter}>
-          <ThemedText style={styles.time}>{new Date(activity.timestamp).toLocaleString()}</ThemedText>
-          <ThemedText style={styles.user}>{activity.user_name}</ThemedText>
+      <ScrollView style={styles.scrollContainer}>
+        {/* Activity details */}
+        <ThemedView style={styles.activityContainer}>
+          <ThemedText style={styles.title}>{activity.title}</ThemedText>
+          <ThemedText style={styles.description}>{activity.description}</ThemedText>
+          {activity.media_url ? (
+            <Image 
+              source={{ uri: activity.media_url }} 
+              style={styles.media}
+              resizeMode="cover"
+            />
+          ) : null}
+          <ThemedView style={styles.activityFooter}>
+            <ThemedText style={styles.time}>{new Date(activity.timestamp).toLocaleString()}</ThemedText>
+            <ThemedText style={styles.user}>{activity.user_name}</ThemedText>
+          </ThemedView>
         </ThemedView>
-      </ThemedView>
 
-      {/* Show location button */}
-      {(activity.latitude !== null && activity.longitude !== null) && (
-        <TouchableOpacity style={styles.showLocationButton} onPress={handleShowLocation}>
-          <ThemedText style={styles.showLocationButtonText}>Show Location</ThemedText>
-        </TouchableOpacity>
-      )}
-
-      {/* Comments section */}
-      <ThemedView style={styles.commentsContainer}>
-        <ThemedText style={styles.commentsTitle}>Comments</ThemedText>
-        {comments.length > 0 ? (
-          comments.map((comment) => (
-            <ThemedView key={comment.id} style={styles.commentContainer}>
-              <ThemedText style={styles.commentUser}>{comment.user_name}</ThemedText>
-              <ThemedText style={styles.commentText}>{comment.comment}</ThemedText>
-              <ThemedText style={styles.commentTime}>{new Date(comment.timestamp).toLocaleString()}</ThemedText>
-            </ThemedView>
-          ))
-        ) : (
-          <ThemedText style={styles.noCommentsText}>No comments yet</ThemedText>
+        {/* Show location button */}
+        {(activity.latitude !== null && activity.longitude !== null) && (
+          <TouchableOpacity style={styles.showLocationButton} onPress={handleShowLocation}>
+            <ThemedText style={styles.showLocationButtonText}>Show Location</ThemedText>
+          </TouchableOpacity>
         )}
-      </ThemedView>
 
-      {/* Add comment section */}
-      <ThemedView style={styles.addCommentContainer}>
-        <TextInput
-          style={styles.commentInput}
-          placeholder="Add a comment..."
-          value={newComment}
-          onChangeText={setNewComment}
-          multiline
-        />
-        <Button title="Post Comment" onPress={handleAddComment} />
-      </ThemedView>
+        {/* Add comment section - moved here below the show location button */}
+        <ThemedView style={styles.addCommentContainer}>
+          <TextInput
+            style={styles.commentInput}
+            placeholder="Add a comment..."
+            value={newComment}
+            onChangeText={setNewComment}
+            multiline
+          />
+          <Button title="Post Comment" onPress={handleAddComment} />
+        </ThemedView>
+
+        {/* Comments section */}
+        <ThemedView style={styles.commentsContainer}>
+          <ThemedText style={styles.commentsTitle}>Comments</ThemedText>
+          {comments.length > 0 ? (
+            comments.map((comment) => (
+              <ThemedView key={comment.id} style={styles.commentContainer}>
+                <ThemedText style={styles.commentUser}>{comment.user_name}</ThemedText>
+                <ThemedText style={styles.commentText}>{comment.comment}</ThemedText>
+                <ThemedText style={styles.commentTime}>{new Date(comment.timestamp).toLocaleString()}</ThemedText>
+              </ThemedView>
+            ))
+          ) : (
+            <ThemedText style={styles.noCommentsText}>No comments yet</ThemedText>
+          )}
+        </ThemedView>
+      </ScrollView>
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  scrollContainer: {
     flex: 1,
     padding: 15,
   },

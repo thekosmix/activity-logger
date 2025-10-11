@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (Platform.OS === 'web') {
       await AsyncStorage.setItem('authorization', token);
       await AsyncStorage.setItem('user', user);
-      console.log('user stored in AsyncStorage:', user);
+
     } else {
       await SecureStore.setItemAsync('authorization', token);
       await SecureStore.setItemAsync('user', user);
