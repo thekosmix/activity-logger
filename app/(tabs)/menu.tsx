@@ -82,7 +82,7 @@ export default function MenuScreen() {
       {isAdmin && (
         <Button 
           title="Manage Employees" 
-          onPress={() => router.push('/(tabs)/employees')}
+          onPress={() => router.push('/admin/employees')}
         />
       )}
       

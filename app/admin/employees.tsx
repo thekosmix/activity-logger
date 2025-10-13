@@ -50,7 +50,7 @@ export default function EmployeesScreen() {
   const renderEmployee = ({ item }) => (
     <TouchableOpacity 
       style={styles.employeeContainer}
-      onPress={() => router.push(`/employee-detail?employeeId=${encodeURIComponent(JSON.stringify(item))}`)}
+      onPress={() => router.push(`/admin/employee-detail?employeeId=${encodeURIComponent(JSON.stringify(item))}`)}
     >
       <ThemedView style={styles.employeeInfo}>
         <IconSymbol name="person.circle" size={40} color="#000" />
