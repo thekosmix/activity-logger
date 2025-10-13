@@ -1,17 +1,16 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, FlatList, Alert, Linking, TouchableOpacity, TextInput, Platform, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { getEmployeeLocations } from '../services/api';
+import LocationMap from '@/components/LocationMap';
 
 // Conditional import for DateTimePicker
 let DateTimePicker;
-let WebView;
 if (Platform.OS !== 'web') {
   DateTimePicker = require('@react-native-community/datetimepicker').default;
-  WebView = require('react-native-webview').WebView;
 }
 
 export default function EmployeeDetailScreen() {
@@ -27,10 +26,6 @@ export default function EmployeeDetailScreen() {
   const [showToDatePicker, setShowToDatePicker] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Add mapRef and mapInstance refs for web map rendering
-  const mapRef = useRef<HTMLDivElement | null>(null);
-  const mapInstance = useRef<any>(null);
-
   useEffect(() => {
     // Parse employee data from the navigation param
     if (typeof employeeId === 'string') {
@@ -45,95 +40,7 @@ export default function EmployeeDetailScreen() {
     setFormattedToDate(formattedToday);
   }, [employeeId]);
 
-  // Initialize and update map for web
-  useEffect(() => {
-    if (Platform.OS === 'web' && locations.length > 0 && mapRef.current) {
-      // Dynamically load Leaflet when needed
-      const initMap = async () => {
-        // Ensure DOM has rendered the container
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
-        // Check if DOM is available (client-side)
-        if (typeof window !== 'undefined' && window.document) {
-          // Check if Leaflet is already loaded
-          if (typeof L === 'undefined') {
-            // Dynamically import Leaflet
-            await import('leaflet');
-          }
-          
-          // Clean up previous map instance if it exists
-          if (mapInstance.current) {
-            mapInstance.current.remove();
-          }
-          
-          // Set default icon options for Leaflet to handle missing marker files
-          L.Icon.Default.mergeOptions({
-            iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
-            iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
-            shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
-          });
-          
-          // Create map
-          const map = L.map(mapRef.current).setView([locations[0].latitude, locations[0].longitude], 10);
-          
-          // Add tile layer with more detailed configuration and a different provider to avoid ORB issues
-          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            maxZoom: 19,
-            tileSize: 256,
-            zoomOffset: 0,
-            // Additional options to help with tile loading
-            detectRetina: true,
-            crossOrigin: true,
-            referrerPolicy: 'no-referrer'
-          }).addTo(map);
-          
-          // Add markers and polylines
-          const markers = [];
-          locations.forEach((loc, index) => {
-            const marker = L.marker([loc.latitude, loc.longitude]).addTo(map);
-            marker.bindPopup(`<b>Location ${index + 1}</b><br>
-                              Time: ${new Date(loc.timestamp).toLocaleString()}<br>
-                              Coords: ${loc.latitude}, ${loc.longitude}`);
-            markers.push(marker);
-          });
-          
-          // Add polyline connecting the points if there are multiple locations
-          if (locations.length > 1) {
-            const latLngs = locations.map(loc => [loc.latitude, loc.longitude]);
-            const polyline = L.polyline(latLngs, {color: 'red', weight: 3}).addTo(map);
-            
-            // Fit bounds to include all points and the path
-            const group = new L.featureGroup([...markers, polyline]);
-            map.fitBounds(group.getBounds().pad(0.1));
-          } else {
-            // If only one location, just center on it
-            map.setView([locations[0].latitude, locations[0].longitude], 13);
-          }
-          
-          // Multiple attempts to ensure tiles load properly
-          setTimeout(() => {
-            map.invalidateSize();
-            // Additional refresh after a longer delay to ensure tiles fully load
-            setTimeout(() => map.invalidateSize(), 300);
-          }, 100);
-          
-          // Store map instance for cleanup
-          mapInstance.current = map;
-        }
-      };
-      
-      initMap();
-    }
-    
-    // Cleanup function
-    return () => {
-      if (Platform.OS === 'web' && mapInstance.current) {
-        mapInstance.current.remove();
-        mapInstance.current = null;
-      }
-    };
-  }, [locations]);
+
 
   const handleFromDatePicker = (event, selectedDate) => {
     if (Platform.OS !== 'web') {
@@ -314,94 +221,10 @@ export default function EmployeeDetailScreen() {
             </TouchableOpacity>
           </View>
           
-          {/* Map Widget - Using OpenStreetMap for mobile, fallback for web */}
-          {locations.length > 0 && Platform.OS !== 'web' ? (
-            <View style={styles.mapContainer}>
-              <WebView
-                originWhitelist={['*']}
-                source={{
-                  html: `
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-                      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-                      <style>
-                        body { margin: 0; padding: 0; }
-                        #map { height: 100%; width: 100%; min-height: 300px; }
-                      </style>
-                    </head>
-                    <body>
-                      <div id="map" style="width:100%; height:100%;"></div>
-                      <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-                      <script>
-                        document.addEventListener('DOMContentLoaded', function() {
-                          // Initialize the map after DOM is loaded
-                          var map = L.map('map').setView([${locations[0].latitude}, ${locations[0].longitude}], 10);
-
-                          // Add OpenStreetMap tiles with proper attribution and parameters to avoid ORB issues
-                          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-                            maxZoom: 19,
-                            tileSize: 256,
-                            zoomOffset: 0,
-                            // Additional options to help with tile loading
-                            detectRetina: true,
-                            crossOrigin: true,
-                            referrerPolicy: 'no-referrer'
-                          }).addTo(map);
-
-                          // Add markers for each location
-                          var locations = ${JSON.stringify(locations)};
-                          var markers = [];
-                          
-                          locations.forEach(function(loc, index) {
-                            var marker = L.marker([loc.latitude, loc.longitude]).addTo(map);
-                            marker.bindPopup('<b>Location ' + (index + 1) + '</b><br>' +
-                                            'Time: ' + new Date(loc.timestamp).toLocaleString() + '<br>' + 
-                                            'Coords: ' + loc.latitude + ', ' + loc.longitude);
-                            markers.push(marker);
-                          });
-                          
-                          // Fit the map to include all markers
-                          if (markers.length > 0) {
-                            var group = new L.featureGroup(markers);
-                            map.fitBounds(group.getBounds().pad(0.1));
-                          }
-                          
-                          // Ensure tiles are loaded properly
-                          setTimeout(function() {
-                            map.invalidateSize();
-                          }, 100);
-                        });
-                      </script>
-                    </body>
-                    </html>
-                  `
-                }}
-                style={{ height: 300 }}
-                javaScriptEnabled={true}
-                domStorageEnabled={true}
-                onLoadEnd={() => {
-                  // Ensure the map is properly sized after loading
-                  setTimeout(() => {
-                    if (Platform.OS === 'ios') {
-                      // On iOS, force a refresh after loading
-                      setTimeout(() => {
-                        // Trigger resize to ensure tiles load properly
-                        mapInstance.current?.invalidateSize();
-                      }, 200);
-                    }
-                  }, 100);
-                }}
-              />
-            </View>
-          ) : locations.length > 0 && Platform.OS === 'web' ? (
-            // Map for web using Leaflet directly
-            <div style={webStyles.mapContainer}>
-              <div id="web-map" ref={mapRef} style={webStyles.mapElement}></div>
-            </div>
-          ) : null}
+          {/* Map Widget - Using dedicated LocationMap component */}
+          {locations.length > 0 && (
+            <LocationMap locations={locations} />
+          )}
         </ThemedView>
 
         {/* Location History */}
@@ -517,12 +340,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     fontSize: 16,
   },
-  mapContainer: {
-    marginTop: 15,
-    height: 300,
-    borderRadius: 8,
-    overflow: 'hidden',
-  },
   webLocationListContainer: {
     marginTop: 15,
     flex: 1,
@@ -606,26 +423,3 @@ const styles = StyleSheet.create({
 });
 
 // Web-specific styles
-const webStyles = {
-  mapContainer: {
-    marginTop: 15,
-    height: 300,
-    borderRadius: 8,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  mapElement: {
-    height: '100%',
-    width: '100%',
-  },
-  pathInfo: {
-    position: 'absolute',
-    bottom: 10,
-    left: 10,
-    right: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    padding: 10,
-    borderRadius: 4,
-    zIndex: 1000,
-  },
-};
