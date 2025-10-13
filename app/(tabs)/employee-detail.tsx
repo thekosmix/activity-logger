@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, FlatList, Alert, Linking, TouchableOpacity, TextInput, Platform } from 'react-native';
+import { useState, useEffect, useRef } from 'react';
+import { StyleSheet, View, Text, FlatList, Alert, Linking, TouchableOpacity, TextInput, Platform, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -27,6 +27,10 @@ export default function EmployeeDetailScreen() {
   const [showToDatePicker, setShowToDatePicker] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Add mapRef and mapInstance refs for web map rendering
+  const mapRef = useRef<HTMLDivElement | null>(null);
+  const mapInstance = useRef<any>(null);
+
   useEffect(() => {
     // Parse employee data from the navigation param
     if (typeof employeeId === 'string') {
@@ -40,6 +44,96 @@ export default function EmployeeDetailScreen() {
     setFormattedFromDate(formattedToday);
     setFormattedToDate(formattedToday);
   }, [employeeId]);
+
+  // Initialize and update map for web
+  useEffect(() => {
+    if (Platform.OS === 'web' && locations.length > 0 && mapRef.current) {
+      // Dynamically load Leaflet when needed
+      const initMap = async () => {
+        // Ensure DOM has rendered the container
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Check if DOM is available (client-side)
+        if (typeof window !== 'undefined' && window.document) {
+          // Check if Leaflet is already loaded
+          if (typeof L === 'undefined') {
+            // Dynamically import Leaflet
+            await import('leaflet');
+          }
+          
+          // Clean up previous map instance if it exists
+          if (mapInstance.current) {
+            mapInstance.current.remove();
+          }
+          
+          // Set default icon options for Leaflet to handle missing marker files
+          L.Icon.Default.mergeOptions({
+            iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+            iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+            shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+          });
+          
+          // Create map
+          const map = L.map(mapRef.current).setView([locations[0].latitude, locations[0].longitude], 10);
+          
+          // Add tile layer with more detailed configuration and a different provider to avoid ORB issues
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19,
+            tileSize: 256,
+            zoomOffset: 0,
+            // Additional options to help with tile loading
+            detectRetina: true,
+            crossOrigin: true,
+            referrerPolicy: 'no-referrer'
+          }).addTo(map);
+          
+          // Add markers and polylines
+          const markers = [];
+          locations.forEach((loc, index) => {
+            const marker = L.marker([loc.latitude, loc.longitude]).addTo(map);
+            marker.bindPopup(`<b>Location ${index + 1}</b><br>
+                              Time: ${new Date(loc.timestamp).toLocaleString()}<br>
+                              Coords: ${loc.latitude}, ${loc.longitude}`);
+            markers.push(marker);
+          });
+          
+          // Add polyline connecting the points if there are multiple locations
+          if (locations.length > 1) {
+            const latLngs = locations.map(loc => [loc.latitude, loc.longitude]);
+            const polyline = L.polyline(latLngs, {color: 'red', weight: 3}).addTo(map);
+            
+            // Fit bounds to include all points and the path
+            const group = new L.featureGroup([...markers, polyline]);
+            map.fitBounds(group.getBounds().pad(0.1));
+          } else {
+            // If only one location, just center on it
+            map.setView([locations[0].latitude, locations[0].longitude], 13);
+          }
+          
+          // Multiple attempts to ensure tiles load properly
+          setTimeout(() => {
+            map.invalidateSize();
+            // Additional refresh after a longer delay to ensure tiles fully load
+            setTimeout(() => map.invalidateSize(), 300);
+          }, 100);
+          
+          // Store map instance for cleanup
+          mapInstance.current = map;
+        }
+      };
+      
+      initMap();
+    }
+    
+    // Cleanup function
+    return () => {
+      if (Platform.OS === 'web' && mapInstance.current) {
+        mapInstance.current.remove();
+        mapInstance.current = null;
+      }
+    };
+  }, [locations]);
 
   const handleFromDatePicker = (event, selectedDate) => {
     if (Platform.OS !== 'web') {
@@ -65,32 +159,6 @@ export default function EmployeeDetailScreen() {
 
   const handleToDateWebChange = (event) => {
     setFormattedToDate(event.target.value);
-  };
-
-  // Helper function to calculate the bounding box for the map
-  const getMapBoundingBox = (locs) => {
-    if (locs.length === 0) return '-180,-85,180,85'; // default world view
-    
-    const lats = locs.map(loc => loc.latitude);
-    const lngs = locs.map(loc => loc.longitude);
-    
-    const minLat = Math.min(...lats);
-    const maxLat = Math.max(...lats);
-    const minLng = Math.min(...lngs);
-    const maxLng = Math.max(...lngs);
-    
-    // Add some padding around the bounding box
-    const latPadding = Math.max(0.01, (maxLat - minLat) * 0.1);
-    const lngPadding = Math.max(0.01, (maxLng - minLng) * 0.1);
-    
-    const bbox = [
-      Math.max(-180, minLng - lngPadding),
-      Math.max(-85, minLat - latPadding),
-      Math.min(180, maxLng + lngPadding),
-      Math.min(85, maxLat + latPadding)
-    ].join(',');
-    
-    return bbox;
   };
 
   const handleFetchLocations = async () => {
@@ -160,199 +228,212 @@ export default function EmployeeDetailScreen() {
   }
 
   return (
-    <ThemedView style={styles.container}>
-      {/* Employee Card - Same as in Manage Employees */}
-      <ThemedView style={styles.employeeContainer}>
-        <ThemedView style={styles.employeeInfo}>
-          <IconSymbol name="person.circle" size={40} color="#000" />
-          <ThemedView style={styles.employeeDetails}>
-            <ThemedText style={styles.employeeName}>{employee.name}</ThemedText>
-            <ThemedText style={styles.employeePhone}>{employee.phone_number}</ThemedText>
-            <ThemedText style={[styles.status, employee.is_approved ? styles.approved : styles.pending]}>
-              {employee.is_approved ? 'Approved' : 'Pending Approval'}
-            </ThemedText>
+    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
+      <ThemedView style={styles.mainContent}>
+        {/* Employee Card - Same as in Manage Employees */}
+        <ThemedView style={styles.employeeContainer}>
+          <ThemedView style={styles.employeeInfo}>
+            <IconSymbol name="person.circle" size={40} color="#000" />
+            <ThemedView style={styles.employeeDetails}>
+              <ThemedText style={styles.employeeName}>{employee.name}</ThemedText>
+              <ThemedText style={styles.employeePhone}>{employee.phone_number}</ThemedText>
+              <ThemedText style={[styles.status, employee.is_approved ? styles.approved : styles.pending]}>
+                {employee.is_approved ? 'Approved' : 'Pending Approval'}
+              </ThemedText>
+            </ThemedView>
           </ThemedView>
         </ThemedView>
-      </ThemedView>
 
-      {/* Date Filters */}
-      <ThemedView style={styles.filterContainer}>
-        <ThemedText style={styles.filterTitle}>Filter Locations by Date</ThemedText>
-        
-        <View style={styles.dateContainer}>
-          <ThemedText style={styles.dateLabel}>From Date:</ThemedText>
-          {Platform.OS === 'web' ? (
-            <input
-              type="date"
-              value={formattedFromDate}
-              onChange={handleFromDateWebChange}
-              style={styles.webDateInput}
-            />
-          ) : (
-            <>
-              <TouchableOpacity style={styles.dateButton} onPress={() => setShowFromDatePicker(true)}>
-                <ThemedText style={styles.dateButtonText}>{formattedFromDate || 'Select Date'}</ThemedText>
-              </TouchableOpacity>
-              {showFromDatePicker && (
-                <DateTimePicker
-                  value={fromDate}
-                  mode="date"
-                  display="default"
-                  onChange={handleFromDatePicker}
-                  maximumDate={new Date()}
-                />
-              )}
-            </>
-          )}
-        </View>
-        
-        <View style={styles.dateContainer}>
-          <ThemedText style={styles.dateLabel}>To Date:</ThemedText>
-          {Platform.OS === 'web' ? (
-            <input
-              type="date"
-              value={formattedToDate}
-              onChange={handleToDateWebChange}
-              style={styles.webDateInput}
-            />
-          ) : (
-            <>
-              <TouchableOpacity style={styles.dateButton} onPress={() => setShowToDatePicker(true)}>
-                <ThemedText style={styles.dateButtonText}>{formattedToDate || 'Select Date'}</ThemedText>
-              </TouchableOpacity>
-              {showToDatePicker && (
-                <DateTimePicker
-                  value={toDate}
-                  mode="date"
-                  display="default"
-                  onChange={handleToDatePicker}
-                  maximumDate={new Date()}
-                />
-              )}
-            </>
-          )}
-        </View>
-        
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity 
-            style={[styles.button, loading && styles.buttonDisabled]} 
-            onPress={handleFetchLocations}
-            disabled={loading}
-          >
-            <ThemedText style={styles.buttonText}>
-              {loading ? 'Loading...' : 'Fetch Locations'}
-            </ThemedText>
-          </TouchableOpacity>
-        </View>
-        
-        {/* Map Widget - Using OpenStreetMap for mobile, fallback for web */}
-        {locations.length > 0 && Platform.OS !== 'web' ? (
-          <View style={styles.mapContainer}>
-            <WebView
-              originWhitelist={['*']}
-              source={{
-                html: `
-                  <!DOCTYPE html>
-                  <html>
-                  <head>
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-                    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-                    <style>
-                      body { margin: 0; padding: 0; }
-                      #map { height: 300px; width: 100%; }
-                    </style>
-                  </head>
-                  <body>
-                    <div id="map"></div>
-                    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-                    <script>
-                      // Initialize the map
-                      var map = L.map('map').setView([${locations[0].latitude}, ${locations[0].longitude}], 10);
-
-                      // Add OpenStreetMap tiles
-                      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '© OpenStreetMap contributors'
-                      }).addTo(map);
-
-                      // Add markers for each location
-                      var locations = ${JSON.stringify(locations)};
-                      var markers = [];
-                      
-                      locations.forEach(function(loc, index) {
-                        var marker = L.marker([loc.latitude, loc.longitude]).addTo(map);
-                        marker.bindPopup('<b>Location ' + (index + 1) + '</b><br>' +
-                                        'Time: ' + new Date(loc.timestamp).toLocaleString() + '<br>' + 
-                                        'Coords: ' + loc.latitude + ', ' + loc.longitude);
-                        markers.push(marker);
-                      });
-                      
-                      // Fit the map to include all markers
-                      if (markers.length > 0) {
-                        var group = new L.featureGroup(markers);
-                        map.fitBounds(group.getBounds().pad(0.1));
-                      }
-                    </script>
-                  </body>
-                  </html>
-                `
-              }}
-              style={{ height: 300 }}
-              javaScriptEnabled={true}
-              domStorageEnabled={true}
-            />
-          </View>
-        ) : locations.length > 0 && Platform.OS === 'web' ? (
-          // Map for web using iframe with OpenStreetMap
-          <div style={webStyles.mapContainer}>
-            <iframe
-              src={`https://www.openstreetmap.org/export/embed.html?bbox=${getMapBoundingBox(locations)}&layer=mapnik&marker=${locations.length > 0 ? locations[0].latitude + ',' + locations[0].longitude : '0,0'}`}
-              style={webStyles.mapElement}
-              frameBorder="0"
-            ></iframe>
-            
-            {/* Overlay to show path and markers if there are multiple locations */}
-            {locations.length > 1 && (
-              <div style={webStyles.pathInfo}>
-                <p>Route with {locations.length} location points</p>
-                <details>
-                  <summary>View coordinates</summary>
-                  <ul>
-                    {locations.map((loc, index) => (
-                      <li key={loc.id}>
-                        {index + 1}. {new Date(loc.timestamp).toLocaleString()} - {loc.latitude}, {loc.longitude}
-                      </li>
-                    ))}
-                  </ul>
-                </details>
-              </div>
+        {/* Date Filters */}
+        <ThemedView style={styles.filterContainer}>
+          <ThemedText style={styles.filterTitle}>Filter Locations by Date</ThemedText>
+          
+          <View style={styles.dateContainer}>
+            <ThemedText style={styles.dateLabel}>From Date:</ThemedText>
+            {Platform.OS === 'web' ? (
+              <input
+                type="date"
+                value={formattedFromDate}
+                onChange={handleFromDateWebChange}
+                style={styles.webDateInput}
+              />
+            ) : (
+              <>
+                <TouchableOpacity style={styles.dateButton} onPress={() => setShowFromDatePicker(true)}>
+                  <ThemedText style={styles.dateButtonText}>{formattedFromDate || 'Select Date'}</ThemedText>
+                </TouchableOpacity>
+                {showFromDatePicker && (
+                  <DateTimePicker
+                    value={fromDate}
+                    mode="date"
+                    display="default"
+                    onChange={handleFromDatePicker}
+                    maximumDate={new Date()}
+                  />
+                )}
+              </>
             )}
-          </div>
-        ) : null}
-      </ThemedView>
+          </View>
+          
+          <View style={styles.dateContainer}>
+            <ThemedText style={styles.dateLabel}>To Date:</ThemedText>
+            {Platform.OS === 'web' ? (
+              <input
+                type="date"
+                value={formattedToDate}
+                onChange={handleToDateWebChange}
+                style={styles.webDateInput}
+              />
+            ) : (
+              <>
+                <TouchableOpacity style={styles.dateButton} onPress={() => setShowToDatePicker(true)}>
+                  <ThemedText style={styles.dateButtonText}>{formattedToDate || 'Select Date'}</ThemedText>
+                </TouchableOpacity>
+                {showToDatePicker && (
+                  <DateTimePicker
+                    value={toDate}
+                    mode="date"
+                    display="default"
+                    onChange={handleToDatePicker}
+                    maximumDate={new Date()}
+                  />
+                )}
+              </>
+            )}
+          </View>
+          
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity 
+              style={[styles.button, loading && styles.buttonDisabled]} 
+              onPress={handleFetchLocations}
+              disabled={loading}
+            >
+              <ThemedText style={styles.buttonText}>
+                {loading ? 'Loading...' : 'Fetch Locations'}
+              </ThemedText>
+            </TouchableOpacity>
+          </View>
+          
+          {/* Map Widget - Using OpenStreetMap for mobile, fallback for web */}
+          {locations.length > 0 && Platform.OS !== 'web' ? (
+            <View style={styles.mapContainer}>
+              <WebView
+                originWhitelist={['*']}
+                source={{
+                  html: `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+                      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+                      <style>
+                        body { margin: 0; padding: 0; }
+                        #map { height: 100%; width: 100%; min-height: 300px; }
+                      </style>
+                    </head>
+                    <body>
+                      <div id="map" style="width:100%; height:100%;"></div>
+                      <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+                      <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                          // Initialize the map after DOM is loaded
+                          var map = L.map('map').setView([${locations[0].latitude}, ${locations[0].longitude}], 10);
 
-      {/* Location History */}
-      <ThemedView style={styles.locationContainer}>
-        <ThemedText style={styles.locationTitle}>Location History</ThemedText>
-        <FlatList
-          data={locations}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={renderLocation}
-          contentContainerStyle={locations.length === 0 ? styles.noLocations : null}
-          ListEmptyComponent={
-            <ThemedText style={styles.noLocationsText}>
-              {loading ? 'Loading locations...' : 'No locations found for the selected date range'}
-            </ThemedText>
-          }
-        />
+                          // Add OpenStreetMap tiles with proper attribution and parameters to avoid ORB issues
+                          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                            maxZoom: 19,
+                            tileSize: 256,
+                            zoomOffset: 0,
+                            // Additional options to help with tile loading
+                            detectRetina: true,
+                            crossOrigin: true,
+                            referrerPolicy: 'no-referrer'
+                          }).addTo(map);
+
+                          // Add markers for each location
+                          var locations = ${JSON.stringify(locations)};
+                          var markers = [];
+                          
+                          locations.forEach(function(loc, index) {
+                            var marker = L.marker([loc.latitude, loc.longitude]).addTo(map);
+                            marker.bindPopup('<b>Location ' + (index + 1) + '</b><br>' +
+                                            'Time: ' + new Date(loc.timestamp).toLocaleString() + '<br>' + 
+                                            'Coords: ' + loc.latitude + ', ' + loc.longitude);
+                            markers.push(marker);
+                          });
+                          
+                          // Fit the map to include all markers
+                          if (markers.length > 0) {
+                            var group = new L.featureGroup(markers);
+                            map.fitBounds(group.getBounds().pad(0.1));
+                          }
+                          
+                          // Ensure tiles are loaded properly
+                          setTimeout(function() {
+                            map.invalidateSize();
+                          }, 100);
+                        });
+                      </script>
+                    </body>
+                    </html>
+                  `
+                }}
+                style={{ height: 300 }}
+                javaScriptEnabled={true}
+                domStorageEnabled={true}
+                onLoadEnd={() => {
+                  // Ensure the map is properly sized after loading
+                  setTimeout(() => {
+                    if (Platform.OS === 'ios') {
+                      // On iOS, force a refresh after loading
+                      setTimeout(() => {
+                        // Trigger resize to ensure tiles load properly
+                        mapInstance.current?.invalidateSize();
+                      }, 200);
+                    }
+                  }, 100);
+                }}
+              />
+            </View>
+          ) : locations.length > 0 && Platform.OS === 'web' ? (
+            // Map for web using Leaflet directly
+            <div style={webStyles.mapContainer}>
+              <div id="web-map" ref={mapRef} style={webStyles.mapElement}></div>
+            </div>
+          ) : null}
+        </ThemedView>
+
+        {/* Location History */}
+        <ThemedView style={styles.locationContainer}>
+          <ThemedText style={styles.locationTitle}>Location History</ThemedText>
+          <FlatList
+            data={locations}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderLocation}
+            contentContainerStyle={locations.length === 0 ? styles.noLocations : null}
+            ListEmptyComponent={
+              <ThemedText style={styles.noLocationsText}>
+                {loading ? 'Loading locations...' : 'No locations found for the selected date range'}
+              </ThemedText>
+            }
+          />
+        </ThemedView>
       </ThemedView>
-    </ThemedView>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#ffffff',
+  },
+  scrollContent: {
     padding: 15,
+  },
+  mainContent: {
+    flex: 1,
   },
   employeeContainer: {
     padding: 15,
