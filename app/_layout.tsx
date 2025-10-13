@@ -5,8 +5,14 @@ import { AuthProvider, useAuth } from '../context/AuthContext';
 function RootLayoutNav() {
   const { userToken, isLoading } = useAuth();
 
+  // While loading, keep showing the auth screens to prevent showing tabs briefly
   if (isLoading) {
-    return null;
+    return (
+      <Stack>
+        <Stack.Screen name="(auth)" options={{ headerShown: false, title: '' }} />
+        <Stack.Screen name="add-activity" options={{ presentation: 'modal', headerShown: false }} />
+      </Stack>
+    );
   }
 
   return (

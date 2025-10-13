@@ -87,12 +87,13 @@ export default function MenuScreen() {
       )}
       
       <ThemedView style={styles.logoutButtonContainer}>
-        <Button title="Logout" onPress={() => {
+        <Button title="Logout" onPress={async () => {
           // Stop location tracking on logout
           if (isClockedIn) {
             BackgroundLocationService.stopTracking();
           }
-          signOut();
+          await signOut();
+          // After signing out, navigate to login
           router.replace('/(auth)/login');
         }} />
       </ThemedView>
