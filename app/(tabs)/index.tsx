@@ -1,7 +1,8 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, FlatList, TouchableOpacity, Button, Image } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -73,6 +74,14 @@ export default function HomeScreen() {
   useEffect(() => {
     fetchActivities(1, true);
   }, []);
+
+  // Refresh activities when the screen comes into focus (e.g., after adding an activity)
+  useFocusEffect(
+    useCallback(() => {
+      // Refresh the activity feed when this screen comes into focus
+      refreshActivities();
+    }, [])
+  );
 
   const renderItem = ({ item }) => (
     <TouchableOpacity 

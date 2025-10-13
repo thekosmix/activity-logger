@@ -107,8 +107,8 @@ export default function AddActivityScreen() {
           {
             text: 'OK',
             onPress: () => {
-              // Navigate back to the home screen
-              router.back();
+              // Navigate directly to the home screen to trigger the focus effect
+              router.navigate('(tabs)/index');
             }
           }
         ]);
