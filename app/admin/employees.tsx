@@ -63,17 +63,8 @@ export default function EmployeesScreen() {
         </ThemedView>
       </ThemedView>
       
-      {!item.is_approved && (
-        <ThemedView style={styles.actionButtons}>
-          <Button 
-            title="Approve" 
-            color="#4CAF50" 
-            onPress={(e) => {
-              e.stopPropagation(); // Prevent the parent TouchableOpacity from triggering
-              handleApproveReject(item.id, true)
-            }} 
-          />
-          <View style={styles.spacer} />
+      <ThemedView style={styles.actionButtons}>
+        {item.is_approved ? (
           <Button 
             title="Reject" 
             color="#F44336" 
@@ -82,8 +73,17 @@ export default function EmployeesScreen() {
               handleApproveReject(item.id, false)
             }} 
           />
-        </ThemedView>
-      )}
+        ) : (
+          <Button 
+            title="Approve" 
+            color="#4CAF50" 
+            onPress={(e) => {
+              e.stopPropagation(); // Prevent the parent TouchableOpacity from triggering
+              handleApproveReject(item.id, true)
+            }} 
+          />
+        )}
+      </ThemedView>
     </TouchableOpacity>
   );
 
