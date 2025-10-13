@@ -17,6 +17,7 @@ export default function AddActivityScreen() {
   const [image, setImage] = useState<string | null>(null); // This will now store the local URI for display before upload, then the uploaded URL
   const [uploadedMediaUrl, setUploadedMediaUrl] = useState(null); // Stores the URL from the backend
   const [isUploading, setIsUploading] = useState(false); // Loading state for media upload
+  const [isCreatingActivity, setIsCreatingActivity] = useState(false); // Loading state for activity creation
   const [location, setLocation] = useState<Location.LocationObjectCoords | null>(null);
   const [locationError, setLocationError] = useState<string | null>(null);
   const router = useRouter();
@@ -88,6 +89,12 @@ export default function AddActivityScreen() {
   };
 
   const handleAddActivity = async () => {
+    // Early return if already creating an activity or media is still uploading
+    if (isCreatingActivity || isUploading) {
+      return;
+    }
+    
+    setIsCreatingActivity(true);
     try {
       // Use uploadedMediaUrl if available, otherwise null
       const activityData = { 
@@ -103,20 +110,15 @@ export default function AddActivityScreen() {
       
       const response = await createActivity(activityData);
       if (response.id) {
-        Alert.alert('Success', 'Activity created successfully.', [
-          {
-            text: 'OK',
-            onPress: () => {
-              // Navigate directly to the home screen to trigger the focus effect
-              router.navigate('(tabs)/index');
-            }
-          }
-        ]);
+        // Navigate directly to the home screen to trigger the focus effect
+        router.navigate('/');
       } else {
         Alert.alert('Error', response.message || 'Failed to create activity');
       }
     } catch (error) {
       Alert.alert('Error', 'An error occurred while creating the activity. Please try again.');
+    } finally {
+      setIsCreatingActivity(false);
     }
   };
 
@@ -125,14 +127,15 @@ export default function AddActivityScreen() {
       <ThemedView style={styles.header}>
         <ThemedText type="title">Add Activity</ThemedText>
       </ThemedView>
-      <Button title="Pick an image or video" onPress={pickImage} disabled={isUploading} />
-      {isUploading && <ActivityIndicator size="large" color="#0000ff" />} 
+      <Button title="Pick an image or video" onPress={pickImage} disabled={isUploading || isCreatingActivity} />
+      {(isUploading || isCreatingActivity) && <ActivityIndicator size="large" color="#0000ff" />} 
       {uploadedMediaUrl && <Image source={{ uri: uploadedMediaUrl }} style={styles.image} />}
       <TextInput
         style={styles.input}
         placeholder="Title"
         value={title}
         onChangeText={setTitle}
+        editable={!isCreatingActivity}
       />
       <TextInput
         style={styles.input}
@@ -140,8 +143,14 @@ export default function AddActivityScreen() {
         multiline
         value={description}
         onChangeText={setDescription}
+        editable={!isCreatingActivity}
       />
-      <Button title="Add Activity" onPress={handleAddActivity} disabled={isUploading} />
+      <Button 
+        title={isCreatingActivity ? "Adding Activity..." : "Add Activity"} 
+        onPress={handleAddActivity} 
+        disabled={isUploading || isCreatingActivity} 
+      />
+      {isCreatingActivity && <ActivityIndicator size="large" color="#0000ff" style={styles.activityIndicator} />}
     </ThemedView>
   );
 }
@@ -170,5 +179,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     width: '100%',
     paddingHorizontal: 10,
+  },
+  activityIndicator: {
+    marginTop: 20,
   },
 });
