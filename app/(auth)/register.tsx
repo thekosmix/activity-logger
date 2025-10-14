@@ -9,11 +9,34 @@ import { register } from '../services/api';
 
 export default function RegisterScreen() {
   const [name, setName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [identifier, setIdentifier] = useState('');
+
+  // Regular expression for validating email
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  
+  // Regular expression for validating 10-digit phone number
+  const phoneRegex = /^[0-9]{10}$/;
+
+  const validateInput = (input) => {
+    if (emailRegex.test(input)) {
+      return 'email';
+    } else if (phoneRegex.test(input)) {
+      return 'phone';
+    } else {
+      return null;
+    }
+  };
 
   const handleRegister = async () => {
+    const validation = validateInput(identifier);
+    
+    if (!validation) {
+      Alert.alert('Error', 'Please enter a valid email or 10-digit phone number.');
+      return;
+    }
+    
     try {
-      const response = await register(name, phoneNumber);
+      const response = await register(name, identifier);
       if (response.success) {
         Alert.alert('Success', 'You have been registered successfully. Please wait for admin approval.');
       } else {
@@ -29,10 +52,10 @@ export default function RegisterScreen() {
       <ThemedText type="title">Register</ThemedText>
       <TextInput
         style={styles.input}
-        placeholder="Phone number"
-        keyboardType="phone-pad"
-        value={phoneNumber}
-        onChangeText={setPhoneNumber}
+        placeholder="Email or Phone number"
+        keyboardType={identifier.includes('@') ? 'email-address' : 'default'}
+        value={identifier}
+        onChangeText={setIdentifier}
       />
       <TextInput
         style={styles.input}

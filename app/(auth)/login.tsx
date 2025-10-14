@@ -9,13 +9,36 @@ import { sendOtp, login } from '../services/api';
 import { useAuth } from '../../context/AuthContext';
 
 export default function LoginScreen() {
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [otp, setOtp] = useState('');
   const { signIn } = useAuth();
 
+  // Regular expression for validating email
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  
+  // Regular expression for validating 10-digit phone number
+  const phoneRegex = /^[0-9]{10}$/;
+
+  const validateInput = (input) => {
+    if (emailRegex.test(input)) {
+      return 'email';
+    } else if (phoneRegex.test(input)) {
+      return 'phone';
+    } else {
+      return null;
+    }
+  };
+
   const handleSendOtp = async () => {
+    const validation = validateInput(identifier);
+    
+    if (!validation) {
+      Alert.alert('Error', 'Please enter a valid email or 10-digit phone number.');
+      return;
+    }
+    
     try {
-      const response = await sendOtp(phoneNumber);
+      const response = await sendOtp(identifier);
       if (response.success) {
         Alert.alert('Success', 'OTP sent successfully.');
       } else {
@@ -27,8 +50,15 @@ export default function LoginScreen() {
   };
 
   const handleLogin = async () => {
+    const validation = validateInput(identifier);
+    
+    if (!validation) {
+      Alert.alert('Error', 'Please enter a valid email or 10-digit phone number.');
+      return;
+    }
+    
     try {
-      const response = await login(phoneNumber, otp);
+      const response = await login(identifier, otp);
     
       if (response.token) {
         signIn(response.token, JSON.stringify(response.user));
@@ -45,10 +75,10 @@ export default function LoginScreen() {
       <ThemedText type="title">Welcome back</ThemedText>
       <TextInput
         style={styles.input}
-        placeholder="Phone number"
-        keyboardType="phone-pad"
-        value={phoneNumber}
-        onChangeText={setPhoneNumber}
+        placeholder="Email or Phone number"
+        keyboardType={identifier.includes('@') ? 'email-address' : 'default'}
+        value={identifier}
+        onChangeText={setIdentifier}
       />
       <Button title="Send OTP" onPress={handleSendOtp} />
       <TextInput

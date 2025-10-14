@@ -28,18 +28,18 @@ const getAuthHeaders = async () => {
   };
 };
 
-export const register = async (name, phoneNumber) => {
-  const response = await apiClient.post('/auth/register', { name, phone_number: phoneNumber });
+export const register = async (name, identifier) => {
+  const response = await apiClient.post('/auth/register', { name, identifier });
   return response.data;
 };
 
-export const sendOtp = async (phoneNumber) => {
-  const response = await apiClient.post('/auth/sendOtp', { phone_number: phoneNumber });
+export const sendOtp = async (identifier) => {
+  const response = await apiClient.post('/auth/sendOtp', { identifier });
   return response.data;
 };
 
-export const login = async (phoneNumber, otp) => {
-  const response = await apiClient.post('/auth/login', { phone_number: phoneNumber, otp });
+export const login = async (identifier, otp) => {
+  const response = await apiClient.post('/auth/login', { identifier, otp });
   return response.data;
 };
 

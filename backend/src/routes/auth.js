@@ -28,8 +28,9 @@ const router = express.Router();
  *             properties:
  *               name:
  *                 type: string
- *               phone_number:
+ *               identifier:
  *                 type: string
+ *                 description: Email or 10-digit phone number
  *               image:
  *                 type: string
  *     responses:
@@ -56,8 +57,9 @@ router.post('/register', register);
  *           schema:
  *             type: object
  *             properties:
- *               phone_number:
+ *               identifier:
  *                 type: string
+ *                 description: Email or 10-digit phone number
  *     responses:
  *       200:
  *         description: OK
@@ -72,7 +74,7 @@ router.post('/sendOtp', sendOtp);
  * @swagger
  * /api/auth/login:
  *   post:
- *     summary: Login an employee with phone number and OTP
+ *     summary: Login an employee with identifier (email or phone number) and OTP
  *     tags: [Auth]
  *     security: []
  *     requestBody:
@@ -82,8 +84,9 @@ router.post('/sendOtp', sendOtp);
  *           schema:
  *             type: object
  *             properties:
- *               phone_number:
+ *               identifier:
  *                 type: string
+ *                 description: Email or 10-digit phone number
  *               otp:
  *                 type: string
  *     responses:
