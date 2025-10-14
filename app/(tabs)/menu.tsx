@@ -15,7 +15,7 @@ export default function MenuScreen() {
   const router = useRouter();
   
   // Check if the user is an admin
-  const isAdmin = user ? JSON.parse(user).is_admin : false;
+  const isAdmin = user ? JSON.parse(user).is_admin === true || JSON.parse(user).is_admin === 1 || JSON.parse(user).is_admin === "1" : false;
 
   const handleClockInOut = async () => {
     try {
