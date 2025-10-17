@@ -38,7 +38,7 @@ const getLocation = (req, res) => {
     params.push(to);
   }
 
-  query += ' ORDER BY timestamp DESC';
+  query += ' ORDER BY timestamp ASC';
 
   db.all(query, params, (err, rows) => {
     if (err) {
