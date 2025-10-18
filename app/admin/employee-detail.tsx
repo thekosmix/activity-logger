@@ -25,6 +25,7 @@ export default function EmployeeDetailScreen() {
   const [showFromDatePicker, setShowFromDatePicker] = useState(false);
   const [showToDatePicker, setShowToDatePicker] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showRouteButton, setShowRouteButton] = useState(false); // State to show/hide the route button
 
   useEffect(() => {
     // Parse employee data from the navigation param
@@ -83,12 +84,32 @@ export default function EmployeeDetailScreen() {
     try {
       const response = await getEmployeeLocations(employee.id, formattedFromDate, formattedToDate);
       setLocations(response);
+      // Show the route button only if we have at least 2 locations
+      setShowRouteButton(response.length >= 2);
     } catch (error) {
       console.error('Error fetching locations:', error);
       Alert.alert('Error', 'Failed to fetch location data');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleShowRoute = () => {
+    if (locations.length < 2) {
+      Alert.alert('Error', 'At least 2 locations are required to show a route');
+      return;
+    }
+
+    // Format locations for Google Maps directions
+    const locationsString = locations
+      .map(location => `${location.latitude},${location.longitude}`)
+      .join('/');
+    
+    const googleMapsUrl = `https://www.google.com/maps/dir/${locationsString}`;
+    
+    Linking.openURL(googleMapsUrl).catch(err => {
+      Alert.alert('Error', 'Could not open Google Maps. Make sure it is installed on your device.');
+    });
   };
 
   const handleShowLocation = (latitude, longitude) => {
@@ -219,6 +240,17 @@ export default function EmployeeDetailScreen() {
                 {loading ? 'Loading...' : 'Fetch Locations'}
               </ThemedText>
             </TouchableOpacity>
+            
+            {showRouteButton && (
+              <TouchableOpacity 
+                style={[styles.button, styles.routeButton]} 
+                onPress={handleShowRoute}
+              >
+                <ThemedText style={styles.buttonText}>
+                  Show Route
+                </ThemedText>
+              </TouchableOpacity>
+            )}
           </View>
           
           {/* Map Widget - Using dedicated LocationMap component */}
@@ -363,6 +395,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     minWidth: 150,
     alignItems: 'center',
+    marginBottom: 10, // Add space between buttons if more than one
+  },
+  routeButton: {
+    backgroundColor: '#28a745', // Different color to distinguish from fetch button
   },
   buttonDisabled: {
     backgroundColor: '#cccccc',

@@ -50,13 +50,13 @@ export default function EmployeesScreen() {
   const renderEmployee = ({ item }) => (
     <TouchableOpacity 
       style={styles.employeeContainer}
-      onPress={() => router.push(`/admin/employee-detail?employeeId=${encodeURIComponent(JSON.stringify(item))}`)}
+      onPress={() => item.id && router.push(`/admin/employee-detail?employeeId=${encodeURIComponent(JSON.stringify(item))}`)}
     >
       <ThemedView style={styles.employeeInfo}>
         <IconSymbol name="person.circle" size={40} color="#000" />
         <ThemedView style={styles.employeeDetails}>
-          <ThemedText style={styles.employeeName}>{item.name}</ThemedText>
-          <ThemedText style={styles.employeePhone}>{item.phone_number}</ThemedText>
+          <ThemedText style={styles.employeeName}>{item.name || 'Unknown Name'}</ThemedText>
+          <ThemedText style={styles.employeePhone}>{item.phone_number || 'No Phone Number'}</ThemedText>
           <ThemedText style={[styles.status, item.is_approved ? styles.approved : styles.pending]}>
             {item.is_approved ? 'Approved' : 'Pending Approval'}
           </ThemedText>
@@ -70,7 +70,7 @@ export default function EmployeesScreen() {
             color="#F44336" 
             onPress={(e) => {
               e.stopPropagation(); // Prevent the parent TouchableOpacity from triggering
-              handleApproveReject(item.id, false)
+              item.id && handleApproveReject(item.id, false)
             }} 
           />
         ) : (
@@ -79,7 +79,7 @@ export default function EmployeesScreen() {
             color="#4CAF50" 
             onPress={(e) => {
               e.stopPropagation(); // Prevent the parent TouchableOpacity from triggering
-              handleApproveReject(item.id, true)
+              item.id && handleApproveReject(item.id, true)
             }} 
           />
         )}
@@ -103,7 +103,7 @@ export default function EmployeesScreen() {
       
       <FlatList
         data={employees}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item.id ? item.id.toString() : Math.random().toString()}
         renderItem={renderEmployee}
         contentContainerStyle={styles.listContainer}
       />

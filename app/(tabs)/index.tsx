@@ -86,10 +86,10 @@ export default function HomeScreen() {
   const renderItem = ({ item }) => (
     <TouchableOpacity 
       style={styles.activityContainer} 
-      onPress={() => router.push(`/activity-detail?id=${item.id}`)}
+      onPress={() => item.id && router.push(`/activity-detail?id=${item.id}`)}
     >
-      <ThemedText style={styles.title}>{item.title}</ThemedText>
-      <ThemedText style={styles.description}>{item.description}</ThemedText>
+      <ThemedText style={styles.title}>{item.title || 'No Title'}</ThemedText>
+      <ThemedText style={styles.description}>{item.description || 'No Description'}</ThemedText>
       {item.media_url ? (
         <Image 
           source={{ uri: item.media_url }} 
@@ -98,8 +98,8 @@ export default function HomeScreen() {
         />
       ) : null}
       <ThemedView style={styles.activityFooter}>
-        <ThemedText style={styles.time}>{new Date(item.timestamp).toLocaleString()}</ThemedText>
-        <ThemedText style={styles.user}>{item.user_name}</ThemedText>
+        <ThemedText style={styles.time}>{item.timestamp ? new Date(item.timestamp).toLocaleString() : 'No Date'}</ThemedText>
+        <ThemedText style={styles.user}>{item.user_name || 'Unknown User'}</ThemedText>
       </ThemedView>
     </TouchableOpacity>
   );
@@ -109,7 +109,7 @@ export default function HomeScreen() {
       <FlatList
         data={activities}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item.id ? item.id.toString() : Math.random().toString()}
         onEndReached={loadMore}
         onEndReachedThreshold={0.1}
         ListFooterComponent={
