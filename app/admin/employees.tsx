@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, FlatList, Button, Alert, TouchableOpacity } from 'react-native';
+import { useThemeColor } from '@/hooks/useThemeColor';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
@@ -10,6 +11,11 @@ export default function EmployeesScreen() {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  
+  // Get theme colors
+  const backgroundColor = useThemeColor({}, 'background');
+  const textColor = useThemeColor({}, 'text');
+  const iconColor = useThemeColor({}, 'icon');
 
   useEffect(() => {
     loadEmployees();
@@ -49,15 +55,15 @@ export default function EmployeesScreen() {
 
   const renderEmployee = ({ item }) => (
     <TouchableOpacity 
-      style={styles.employeeContainer}
+      style={[styles.employeeContainer, { backgroundColor }]}
       onPress={() => item.id && router.push(`/admin/employee-detail?employeeId=${encodeURIComponent(JSON.stringify(item))}`)}
     >
       <ThemedView style={styles.employeeInfo}>
-        <IconSymbol name="person.circle" size={40} color="#000" />
+        <IconSymbol name="person.circle" size={40} color={iconColor} />
         <ThemedView style={styles.employeeDetails}>
-          <ThemedText style={styles.employeeName}>{item.name || 'Unknown Name'}</ThemedText>
-          <ThemedText style={styles.employeePhone}>{item.phone_number || 'No Phone Number'}</ThemedText>
-          <ThemedText style={[styles.status, item.is_approved ? styles.approved : styles.pending]}>
+          <ThemedText style={[styles.employeeName, { color: textColor }]}>{item.name || 'Unknown Name'}</ThemedText>
+          <ThemedText style={[styles.employeePhone, { color: textColor }]}>{item.phone_number || 'No Phone Number'}</ThemedText>
+          <ThemedText style={[styles.status, item.is_approved ? styles.approved : styles.pending, { color: textColor }]}>
             {item.is_approved ? 'Approved' : 'Pending Approval'}
           </ThemedText>
         </ThemedView>
@@ -128,7 +134,6 @@ const styles = StyleSheet.create({
   },
   employeeContainer: {
     padding: 15,
-    backgroundColor: '#f5f5f5',
     borderRadius: 8,
     marginBottom: 10,
   },
@@ -147,7 +152,6 @@ const styles = StyleSheet.create({
   },
   employeePhone: {
     fontSize: 14,
-    color: 'gray',
     marginBottom: 5,
   },
   status: {
@@ -160,11 +164,9 @@ const styles = StyleSheet.create({
   },
   approved: {
     backgroundColor: '#e8f5e9',
-    color: '#4caf50',
   },
   pending: {
     backgroundColor: '#fff3e0',
-    color: '#ff9800',
   },
   actionButtons: {
     flexDirection: 'row',

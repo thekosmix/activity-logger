@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, FlatList, Alert, Linking, TouchableOpacity, TextInput, Platform, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useThemeColor } from '@/hooks/useThemeColor';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
@@ -26,6 +27,11 @@ export default function EmployeeDetailScreen() {
   const [showToDatePicker, setShowToDatePicker] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showRouteButton, setShowRouteButton] = useState(false); // State to show/hide the route button
+  
+  // Get theme colors
+  const borderColor = useThemeColor({}, 'text');
+  const textColor = useThemeColor({}, 'text');
+  const backgroundColor = useThemeColor({}, 'background');
 
   useEffect(() => {
     // Parse employee data from the navigation param
@@ -126,12 +132,12 @@ export default function EmployeeDetailScreen() {
   };
 
   const renderLocation = ({ item }) => (
-    <ThemedView style={styles.locationItem}>
+    <ThemedView style={[styles.locationItem, { borderBottomColor: borderColor }]}>
       <ThemedView style={styles.locationInfo}>
-        <ThemedText style={styles.locationTime}>
+        <ThemedText style={[styles.locationTime, { color: textColor }]}>
           {new Date(item.timestamp).toLocaleString()}
         </ThemedText>
-        <ThemedText style={styles.locationCoords}>
+        <ThemedText style={[styles.locationCoords, { color: textColor }]}>
           {item.latitude}, {item.longitude}
         </ThemedText>
       </ThemedView>
@@ -282,7 +288,6 @@ export default function EmployeeDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
   },
   scrollContent: {
     padding: 15,
@@ -292,7 +297,6 @@ const styles = StyleSheet.create({
   },
   employeeContainer: {
     padding: 15,
-    backgroundColor: '#f5f5f5',
     borderRadius: 8,
     marginBottom: 15,
   },
@@ -311,7 +315,6 @@ const styles = StyleSheet.create({
   },
   employeePhone: {
     fontSize: 14,
-    color: 'gray',
     marginBottom: 5,
   },
   status: {
@@ -324,15 +327,12 @@ const styles = StyleSheet.create({
   },
   approved: {
     backgroundColor: '#e8f5e9',
-    color: '#4caf50',
   },
   pending: {
     backgroundColor: '#fff3e0',
-    color: '#ff9800',
   },
   filterContainer: {
     padding: 15,
-    backgroundColor: '#f9f9f9',
     borderRadius: 8,
     marginBottom: 15,
   },
@@ -354,20 +354,17 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
     borderWidth: 1,
-    borderColor: '#ddd',
     borderRadius: 5,
     paddingHorizontal: 10,
     justifyContent: 'center',
   },
   dateButtonText: {
     fontSize: 16,
-    color: '#333',
   },
   webDateInput: {
     flex: 1,
     height: 40,
     borderWidth: 1,
-    borderColor: '#ddd',
     borderRadius: 5,
     paddingHorizontal: 10,
     fontSize: 16,
@@ -382,7 +379,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
   },
   buttonContainer: {
     marginTop: 10,
@@ -421,7 +417,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
   },
   locationInfo: {
     flex: 1,
@@ -431,7 +426,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   locationCoords: {
-    color: 'gray',
   },
   showOnMapButton: {
     backgroundColor: '#007BFF',
@@ -450,10 +444,8 @@ const styles = StyleSheet.create({
   },
   noLocationsText: {
     fontStyle: 'italic',
-    color: 'gray',
   },
   goBackText: {
-    color: '#007BFF',
     marginTop: 10,
   },
 });

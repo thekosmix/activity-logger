@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { StyleSheet, TextInput, Button, Image, Alert, ActivityIndicator } from 'react-native';
+import { useThemeColor } from '@/hooks/useThemeColor';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
@@ -21,6 +22,11 @@ export default function AddActivityScreen() {
   const [location, setLocation] = useState<Location.LocationObjectCoords | null>(null);
   const [locationError, setLocationError] = useState<string | null>(null);
   const router = useRouter();
+  
+  // Get theme colors
+  const backgroundColor = useThemeColor({}, 'background');
+  const textColor = useThemeColor({}, 'text');
+  const borderColor = useThemeColor({}, 'icon');
 
   useEffect(() => {
     (async () => {
@@ -131,15 +137,17 @@ export default function AddActivityScreen() {
       {(isUploading || isCreatingActivity) && <ActivityIndicator size="large" color="#0000ff" />} 
       {uploadedMediaUrl && <Image source={{ uri: uploadedMediaUrl }} style={styles.image} />}
       <TextInput
-        style={styles.input}
+        style={[styles.input, { backgroundColor, color: textColor, borderColor }]}
         placeholder="Title"
+        placeholderTextColor={borderColor}
         value={title}
         onChangeText={setTitle}
         editable={!isCreatingActivity}
       />
       <TextInput
-        style={styles.input}
+        style={[styles.input, { backgroundColor, color: textColor, borderColor }]}
         placeholder="Description"
+        placeholderTextColor={borderColor}
         multiline
         value={description}
         onChangeText={setDescription}
@@ -174,7 +182,6 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    borderColor: 'gray',
     borderWidth: 1,
     marginBottom: 20,
     width: '100%',

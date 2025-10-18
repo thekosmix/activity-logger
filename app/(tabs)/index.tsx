@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, FlatList, TouchableOpacity, Button, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -19,6 +20,11 @@ export default function HomeScreen() {
   const PAGE_SIZE = 5;
   const { signOut } = useAuth();
   const router = useRouter();
+  
+  // Get theme colors
+  const borderColor = useThemeColor({}, 'text');
+  const textColor = useThemeColor({}, 'text');
+  const backgroundColor = useThemeColor({}, 'background');
 
   const fetchActivities = async (pageNum = 1, shouldReset = false) => {
     if (loading || (!hasMore && pageNum > 1)) return;
@@ -85,11 +91,11 @@ export default function HomeScreen() {
 
   const renderItem = ({ item }) => (
     <TouchableOpacity 
-      style={styles.activityContainer} 
+      style={[styles.activityContainer, { borderBottomColor: borderColor }]} 
       onPress={() => item.id && router.push(`/activity-detail?id=${item.id}`)}
     >
-      <ThemedText style={styles.title}>{item.title || 'No Title'}</ThemedText>
-      <ThemedText style={styles.description}>{item.description || 'No Description'}</ThemedText>
+      <ThemedText style={[styles.title, { color: textColor }]}>{item.title || 'No Title'}</ThemedText>
+      <ThemedText style={[styles.description, { color: textColor }]}>{item.description || 'No Description'}</ThemedText>
       {item.media_url ? (
         <Image 
           source={{ uri: item.media_url }} 
@@ -97,9 +103,9 @@ export default function HomeScreen() {
           resizeMode="cover"
         />
       ) : null}
-      <ThemedView style={styles.activityFooter}>
-        <ThemedText style={styles.time}>{item.timestamp ? new Date(item.timestamp).toLocaleString() : 'No Date'}</ThemedText>
-        <ThemedText style={styles.user}>{item.user_name || 'Unknown User'}</ThemedText>
+      <ThemedView style={[styles.activityFooter, { borderTopColor: borderColor, backgroundColor }]}>
+        <ThemedText style={[styles.time, { color: textColor }]}>{item.timestamp ? new Date(item.timestamp).toLocaleString() : 'No Date'}</ThemedText>
+        <ThemedText style={[styles.user, { color: textColor, fontWeight: 'bold' }]}>{item.user_name || 'Unknown User'}</ThemedText>
       </ThemedView>
     </TouchableOpacity>
   );
@@ -136,21 +142,18 @@ const styles = StyleSheet.create({
   activityContainer: {
     padding: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
   },
 
   user: {
     fontWeight: 'bold',
   },
   time: {
-    color: 'gray',
     fontSize: 12,
   },
   title: {
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 5,
-    color: '#333',
   },
   description: {
     marginBottom: 10,
@@ -169,7 +172,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: '#eee',
   },
   footerAction: {
     flexDirection: 'row',

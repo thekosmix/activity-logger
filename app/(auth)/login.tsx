@@ -5,6 +5,7 @@ import { Link } from 'expo-router';
 
 import { ThemedText } from '../../components/ThemedText';
 import { ThemedView } from '../../components/ThemedView';
+import { useThemeColor } from '../../hooks/useThemeColor';
 import { sendOtp, login } from '../services/api';
 import { useAuth } from '../../context/AuthContext';
 
@@ -12,6 +13,9 @@ export default function LoginScreen() {
   const [identifier, setIdentifier] = useState('');
   const [otp, setOtp] = useState('');
   const { signIn } = useAuth();
+  const backgroundColor = useThemeColor({}, 'background');
+  const textColor = useThemeColor({}, 'text');
+  const borderColor = useThemeColor({}, 'icon');
 
   // Regular expression for validating email
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -74,16 +78,18 @@ export default function LoginScreen() {
     <ThemedView style={styles.container}>
       <ThemedText type="title">Welcome back</ThemedText>
       <TextInput
-        style={styles.input}
+        style={[styles.input, { backgroundColor, color: textColor, borderColor }]}
         placeholder="Email or Phone number"
+        placeholderTextColor={borderColor} // Use border color for placeholder to ensure visibility
         keyboardType={identifier.includes('@') ? 'email-address' : 'default'}
         value={identifier}
         onChangeText={setIdentifier}
       />
       <Button title="Send OTP" onPress={handleSendOtp} />
       <TextInput
-        style={styles.input}
+        style={[styles.input, { backgroundColor, color: textColor, borderColor }]}
         placeholder="OTP"
+        placeholderTextColor={borderColor} // Use border color for placeholder to ensure visibility
         keyboardType="number-pad"
         secureTextEntry
         value={otp}

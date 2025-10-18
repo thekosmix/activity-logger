@@ -6,10 +6,10 @@ import axios from 'axios';
 // For development, you need to choose the appropriate URL based on how you're running the app
 // 1. Use your local IP when accessing the app directly from the same network (no tunnel)
 // 2. Use a public URL (like from ngrok) when using tunnel mode
- const API_URL = 'http://localhost:3000/api';
+// const API_URL = 'http://localhost:3000/api';
 
 // Alternative: Uncomment and update the line below if you're using ngrok to expose your backend
-// const API_URL = 'https://intense-solid-gazelle.ngrok-free.app/api'; // Replace with your actual ngrok HTTPS URL
+ const API_URL = 'https://intense-solid-gazelle.ngrok-free.app/api'; // Replace with your actual ngrok HTTPS URL
 
 const apiClient = axios.create({
   baseURL: API_URL,
